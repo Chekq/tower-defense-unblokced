@@ -49,15 +49,16 @@ h2{margin:0 0 6px;font-size:18px}
   <button id="db" class="ghost">Dev Tools</button>
  </div>
 </div>
+
 <!-- Patch Notes Overlay -->
 <div class="ov" id="pn" hidden><div class="card">
  <h2>What's New (<span id="pnVer"></span>)</h2>
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Enhanced Tracers:</b> Minigun bullet tracers are now wider, brighter, and remain visible longer.</li>
-   <li><b>Reduced Screen Shake:</b> Reduced base minigun recoil shake to improve firing readability.</li>
-   <li><b>Patch Notes System:</b> Added auto-display patch notes for initial update loads.</li>
+   <li><b>Main Turret Minigun Barrels:</b> Buying the minigun now renders animated dual barrels on the central base that point at targets, spin, and recoil while firing.</li>
+   <li><b>Enhanced Tracers:</b> Minigun bullet tracers are wider, brighter, and remain visible longer.</li>
+   <li><b>Reduced Screen Shake:</b> Optimized recoil feedback to improve overall gameplay clarity.</li>
   </ul>
  </div>
  <button id="pnClose" style="width:100%;">Got it!</button>
@@ -102,7 +103,7 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.1.0';
+const GAME_VERSION = 'v1.2.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
@@ -132,7 +133,7 @@ function init(){
     lightnings:[],sparks:[],shells:[],miniSmoke:[],miniSparks:[],en:[],
     spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],
     ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false,
-    shake:0,flash:0,recoil:0,miniAngle:0,
+    shake:0,flash:0,recoil:0,miniAngle:0,barrelSpin:0,
     towers:[],placingTower:false,selectedTower:null,mousePos:{x:0,y:0}};
  $('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;$('tp').hidden=true;$('placeBanner').hidden=true;
  nextWave();
@@ -170,63 +171,71 @@ function update(dt){
  S.tgt=near;
  if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
  
- // Base Minigun
- if(S.mini&&inr.length){
-  S.mcd-=dt;
-  let n=0;
-  while(S.mcd<=0&&n++<8){
-   const arm = inr.filter(e=>e.ar&&e.h>0);
-   const pool = arm.length ? arm : inr.filter(e=>e.h>0);
-   if(!pool.length) break;
-   const e=pool[Math.random()*pool.length|0];
-   hit(e,mDmg(S.mini)*(e.ar?1.5:1));
+ // Base Minigun Target & Firing Logic
+ if(S.mini){
+  const arm = inr.filter(e=>e.ar&&e.h>0);
+  const pool = arm.length ? arm : inr.filter(e=>e.h>0);
+  if(pool.length){
+   const target = pool[0];
+   S.miniAngle = Math.atan2(target.y - cy, target.x - cx);
+  }
 
-   const angle = Math.atan2(e.y - cy, e.x - cx);
-   S.miniAngle = angle;
-   S.recoil = 5;
-   S.shake = Math.max(S.shake, 1.0);
+  if(inr.length){
+   S.mcd-=dt;
+   let n=0;
+   while(S.mcd<=0&&n++<8){
+    const e=pool[Math.random()*pool.length|0];
+    if(!e) break;
+    hit(e,mDmg(S.mini)*(e.ar?1.5:1));
 
-   const mx = cx + Math.cos(angle) * MR;
-   const my = cy + Math.sin(angle) * MR;
+    const angle = Math.atan2(e.y - cy, e.x - cx);
+    S.miniAngle = angle;
+    S.recoil = 4;
+    S.shake = Math.max(S.shake, 0.8);
+    S.barrelSpin = (S.barrelSpin || 0) + 1.2;
 
-   S.mFlashes.push({x: mx, y: my, angle, t: 0.05, maxT: 0.05});
+    const barrelTipX = cx + Math.cos(angle) * (MR + 10);
+    const barrelTipY = cy + Math.sin(angle) * (MR + 10);
 
-   const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
-   const brassSpd = 80 + Math.random() * 110;
-   S.shells.push({
-    x: cx, y: cy,
-    vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
-    rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
-    t: 0.4 + Math.random()*0.2, maxT: 0.6
-   });
+    S.mFlashes.push({x: barrelTipX, y: barrelTipY, angle, t: 0.05, maxT: 0.05});
 
-   if(Math.random()<0.45){
-    S.miniSmoke.push({
-     x: mx, y: my,
-     vx: Math.cos(angle)*25 + (Math.random()-0.5)*20,
-     vy: Math.sin(angle)*25 + (Math.random()-0.5)*20,
-     r: 3 + Math.random()*3,
-     t: 0.35, maxT: 0.35
+    const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
+    const brassSpd = 80 + Math.random() * 110;
+    S.shells.push({
+     x: cx, y: cy,
+     vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
+     rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
+     t: 0.4 + Math.random()*0.2, maxT: 0.6
     });
+
+    if(Math.random()<0.45){
+     S.miniSmoke.push({
+      x: barrelTipX, y: barrelTipY,
+      vx: Math.cos(angle)*25 + (Math.random()-0.5)*20,
+      vy: Math.sin(angle)*25 + (Math.random()-0.5)*20,
+      r: 3 + Math.random()*3,
+      t: 0.35, maxT: 0.35
+     });
+    }
+
+    const spread = (Math.random() - 0.5) * 16;
+    const tx = e.x + Math.cos(angle + Math.PI/2) * spread;
+    const ty = e.y + Math.sin(angle + Math.PI/2) * spread;
+    S.tr.push({x1: barrelTipX, y1: barrelTipY, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
+
+    for(let k=0; k<3; k++) {
+     const spd = 60 + Math.random()*140;
+     const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
+     S.miniSparks.push({
+      x: tx, y: ty,
+      vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
+      t: 0.15 + Math.random()*0.1, maxT: 0.25
+     });
+    }
+
+    S.mImpacts.push({x: tx, y: ty, t: 0.12});
+    S.mcd+=1/16;
    }
-
-   const spread = (Math.random() - 0.5) * 16;
-   const tx = e.x + Math.cos(angle + Math.PI/2) * spread;
-   const ty = e.y + Math.sin(angle + Math.PI/2) * spread;
-   S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
-
-   for(let k=0; k<3; k++) {
-    const spd = 60 + Math.random()*140;
-    const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
-    S.miniSparks.push({
-     x: tx, y: ty,
-     vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
-     t: 0.15 + Math.random()*0.1, maxT: 0.25
-    });
-   }
-
-   S.mImpacts.push({x: tx, y: ty, t: 0.12});
-   S.mcd+=1/16;
   }
  }
 
@@ -450,7 +459,7 @@ function draw(){
   ctx.fill();
  }
 
- // Refined & Prominent Tracers
+ // Tracers
  for(const t of S.tr) {
   const a = t.t / t.maxT;
   ctx.beginPath();
@@ -632,20 +641,46 @@ function draw(){
 
  // Core Central Base Turret
  ctx.save();
+ ctx.translate(cx, cy);
+
+ // If minigun is bought, rotate turret to aim
+ if(S.mini && S.miniAngle !== undefined) {
+  ctx.rotate(S.miniAngle);
+ }
+
  if(S.mini && S.recoil > 0) {
-  const rx = -Math.cos(S.miniAngle) * S.recoil;
-  const ry = -Math.sin(S.miniAngle) * S.recoil;
-  ctx.translate(rx, ry);
+  ctx.translate(-S.recoil, 0);
  }
 
- ctx.beginPath();ctx.arc(cx,cy,MR,0,TAU);
- ctx.fillStyle=S.hit>0?'#ef4444':theme.core;ctx.fill();
- ctx.lineWidth=3;ctx.strokeStyle=theme.bg;ctx.stroke();
+ // Draw main central tower base
+ ctx.beginPath(); ctx.arc(0, 0, MR, 0, TAU);
+ ctx.fillStyle = S.hit > 0 ? '#ef4444' : theme.core; ctx.fill();
+ ctx.lineWidth = 3; ctx.strokeStyle = theme.bg; ctx.stroke();
 
- if(S.mini){
-  ctx.beginPath();ctx.arc(cx,cy,6,0,TAU);ctx.fillStyle='#f59e0b';ctx.fill();
-  ctx.beginPath();ctx.arc(cx,cy,3,0,TAU);ctx.fillStyle='#78350f';ctx.fill();
+ // Minigun Barrels Visual
+ if(S.mini) {
+  const spin = S.barrelSpin || 0;
+  const off1 = Math.sin(spin) * 2.5;
+  const off2 = -Math.sin(spin) * 2.5;
+
+  // Heavy turret mount casing
+  ctx.fillStyle = '#334155';
+  ctx.fillRect(2, -7, 8, 14);
+
+  // Twin rotating/recoiling barrels extending forward
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(8, -5 + off1, 14, 3);
+  ctx.fillRect(8, 2 + off2, 14, 3);
+
+  // Metallic barrel tips / muzzle brake
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(20, -6, 3, 12);
+
+  // Central turret cap
+  ctx.beginPath(); ctx.arc(0, 0, 7, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
+  ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
  }
+
  ctx.restore();
 
  if(S.ban>0){ctx.globalAlpha=Math.min(1,S.ban);ctx.fillStyle=theme.ink;ctx.font='bold 26px system-ui,sans-serif';ctx.fillText(S.bt,cx,cy+R+36);ctx.globalAlpha=1}
