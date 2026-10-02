@@ -30,6 +30,7 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .row small{display:block}
 h2{margin:0 0 6px;font-size:18px}
+.hud-btns{display:flex;gap:6px;align-items:center}
 </style>
 </head>
 <body>
@@ -39,7 +40,11 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="box"><b id="wv"></b><div class="mute" id="lf"></div></div>
  <div class="box"><div id="hpt"></div><div class="bar"><i id="hpb"></i></div></div>
  <div class="box"><div>Tokens: <b id="tk">0</b></div><div class="bar" id="tb" title="Progress to next token"><i></i></div></div>
- <button id="ub">Upgrades</button>
+ <div class="hud-btns">
+  <button id="sb" class="ghost">2x Speed</button>
+  <button id="ub">Upgrades</button>
+  <button id="db" class="ghost">Dev Tools</button>
+ </div>
 </div>
 <div class="ov" id="up" hidden><div class="card">
  <h2>Upgrades</h2>
@@ -47,6 +52,29 @@ h2{margin:0 0 6px;font-size:18px}
  <div id="rows"></div>
  <div class="row"><small>Enemies from Lv 6 are armored (grey ring). Minigun deals ×1.5 to them, Laser ×0.75.</small></div>
  <button id="cl" class="ghost">Resume</button>
+</div></div>
+<div class="ov" id="dt" hidden><div class="card">
+ <h2>Dev Tools</h2>
+ <div id="dtPassArea">
+  <div class="mute" style="margin-bottom:8px;">Enter password to unlock developer cheats:</div>
+  <input type="password" id="dtPass" placeholder="Password" style="width:100%;padding:8px;box-sizing:border-box;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px;">
+  <div style="display:flex;gap:8px;">
+   <button id="dtSub">Unlock</button>
+   <button id="dtCancel" class="ghost">Cancel</button>
+  </div>
+  <div id="dtErr" style="color:#ef4444;margin-top:8px;font-size:12px;"></div>
+ </div>
+ <div id="dtContent" hidden>
+  <div class="row">
+   <div><b>Unlimited Tokens</b><small>Locks tokens at maximum</small></div>
+   <button id="dtTokBtn">Enable</button>
+  </div>
+  <div class="row">
+   <div><b>Add +10,000 Tokens</b><small>Instant token grant</small></div>
+   <button id="dtAddTok">+10k Tokens</button>
+  </div>
+  <button id="dtClose" class="ghost" style="margin-top:12px;width:100%;">Close</button>
+ </div>
 </div></div>
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
@@ -61,12 +89,13 @@ const topLv=()=>1+Math.floor((S.wave-1)/10);
 const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
 function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
 function resize(){const d=Math.min(devicePixelRatio||1,2),a=$('app');W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);cx=W/2;cy=H/2+20;R=Math.max(100,Math.min(210,Math.min(W,H)*.3));SR=Math.hypot(W,H)/2+30;readTheme()}
-function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,lightnings:[],en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],ban:0,bt:'',over:false,tgt:null,hit:0};$('go').hidden=true;$('up').hidden=true;nextWave()}
+function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,lightnings:[],en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false};$('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;nextWave()}
 function nextWave(){S.wave++;S.spawn=8+2*S.wave;S.iv=12/S.spawn;S.st=0;S.inter=0;S.ban=2.4;S.bt='Wave '+S.wave+((S.wave-1)%10==0&&S.wave>1?' - new enemy level '+topLv()+'!':'')}
 function spawn(){const t=topLv(),L=t==1?1:Math.random()<.55?t:1+Math.floor(Math.random()*t),a=Math.random()*TAU,h=Math.round((24+5*S.wave)*2**(L-1));
  S.en.push({x:cx+Math.cos(a)*SR,y:cy+Math.sin(a)*SR,L,h,m:h,v:32+4*L+Math.random()*10,d:Math.round(4*1.6**(L-1)),r:7+Math.min(L,12)*1.2,cd:0,ar:L>=6,fl:0})}
-function hit(e,d){if(e.h<=0)return;S.acc+=Math.min(d,e.h);e.h-=d;e.fl=.08;let t=thr();while(S.acc>=t){S.acc-=t;S.tok++;t=thr()}}
+function hit(e,d){if(e.h<=0)return;S.acc+=Math.min(d,e.h);e.h-=d;e.fl=.08;let t=thr();while(S.acc>=t){S.acc-=t;if(!S.infTok)S.tok++;t=thr()}}
 function update(dt){
+ if(S.infTok)S.tok=999999;
  if(S.ban>0)S.ban-=dt;if(S.hit>0)S.hit-=dt;
  if(S.spawn>0){S.st-=dt;while(S.st<=0&&S.spawn>0){spawn();S.spawn--;S.st+=S.iv}}
  const inr=[];let near=null,nd=1e9;
@@ -84,12 +113,11 @@ function update(dt){
    if(!pool.length) break;
    const e=pool[Math.random()*pool.length|0];
    hit(e,mDmg(S.mini)*(e.ar?1.5:1));
-   // Enhance tracers: Add muzzle flash and impact burst
-   if(n===1) S.mFlashes.push({t:0.04}); // One flash per n interval
-   for(let i=0; i<4; i++) { // chaotic tracer lines
+   if(n===1) S.mFlashes.push({t:0.04});
+   for(let i=0; i<4; i++) {
     S.tr.push({x:e.x+(Math.random()-0.5)*10, y:e.y+(Math.random()-0.5)*10, t:0.07+Math.random()*0.05});
    }
-   S.mImpacts.push({x:e.x, y:e.y, t:0.15}); // dynamic impact ring
+   S.mImpacts.push({x:e.x, y:e.y, t:0.15});
    S.mcd+=1/14;
   }
  }
@@ -125,11 +153,9 @@ function draw(){
  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle=theme.range;ctx.fill();ctx.strokeStyle=theme.rline;ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
  ctx.lineCap='round';
 
- // Enhance Minigun Tracers
  ctx.strokeStyle='#fb923c';ctx.lineWidth=3;for(const t of S.tr) { line(t.x,t.y); }
  ctx.strokeStyle='#facc15';ctx.lineWidth=1.5;for(const t of S.tr) { line(t.x,t.y); }
 
- // Enhance Minigun Impacts (fading expanding rings)
  for(const i of S.mImpacts) {
   const a=Math.max(0,i.t/0.15),r=(1-a)*15+5;
   ctx.beginPath();ctx.arc(i.x,i.y,r,0,TAU);
@@ -137,15 +163,12 @@ function draw(){
   ctx.fillStyle=`rgba(251,146,60,${a*0.3})`;ctx.fill();
  }
 
- // Enhance Laser (flickering width, core/halo, impact sparks)
  if(S.tgt){
-  // dynamic wider halo with a core white-yellow beam
   const flicker=Math.sin(performance.now()*0.05)*2+3;
   ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;line(S.tgt.x,S.tgt.y);
   ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y);
   ctx.strokeStyle='#fef08a';ctx.lineWidth=1;line(S.tgt.x,S.tgt.y);
 
-  // continuous impact effect on the target
   for(let i=0; i<3; i++) {
    const a=Math.random()*0.8+0.2,r=Math.random()*15+5;
    ctx.beginPath();ctx.arc(S.tgt.x,S.tgt.y,r,0,TAU);
@@ -159,7 +182,6 @@ function draw(){
   ctx.fillStyle='#0b1020';ctx.fillText(e.L,e.x,e.y+.5);
   if(e.h<e.m){const w=e.r*2;ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(e.x-e.r,e.y-e.r-7,w,3);ctx.fillStyle='#22c55e';ctx.fillRect(e.x-e.r,e.y-e.r-7,w*e.h/e.m,3)}}
 
- // Bolt (Cyan lightning effect already noticeable, added more segments/dynamic width for punch)
  for(const l of S.lightnings){
   const a=Math.max(0,l.t/.4),segs=8;
   ctx.save();
@@ -178,7 +200,6 @@ function draw(){
   ctx.restore();
  }
 
- // Enhance Minigun Muzzle Flashes at the Base
  for(const f of S.mFlashes) {
   const a=Math.max(0,f.t/0.04),r=35*a;
   ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);
@@ -190,15 +211,66 @@ function draw(){
  if(S.mini){ctx.beginPath();ctx.arc(cx,cy,5,0,TAU);ctx.fillStyle='#f59e0b';ctx.fill()}
  if(S.ban>0){ctx.globalAlpha=Math.min(1,S.ban);ctx.fillStyle=theme.ink;ctx.font='bold 26px system-ui,sans-serif';ctx.fillText(S.bt,cx,cy+R+36);ctx.globalAlpha=1}
 }
-function hud(){$('wv').textContent='Wave '+S.wave+' (enemies up to Lv '+topLv()+')';$('lf').textContent=(S.spawn+S.en.length)+' enemies left';$('hpt').textContent='HP '+Math.ceil(S.hp)+' / '+hpMax();$('hpb').style.width=S.hp/hpMax()*100+'\%';$('tk').textContent=S.tok;$('tb').firstElementChild.style.width=Math.min(100,S.acc/thr()*100)+'\%';$('ub').textContent='Upgrades'+(S.tok?' ('+S.tok+')':'')}
+function hud(){$('wv').textContent='Wave '+S.wave+' (enemies up to Lv '+topLv()+')';$('lf').textContent=(S.spawn+S.en.length)+' enemies left';$('hpt').textContent='HP '+Math.ceil(S.hp)+' / '+hpMax();$('hpb').style.width=S.hp/hpMax()*100+'\%';$('tk').textContent=S.infTok?'∞':S.tok;$('tb').firstElementChild.style.width=S.infTok?'100\%':Math.min(100,S.acc/thr()*100)+'\%';$('ub').textContent='Upgrades'+(S.tok?' ('+(S.infTok?'∞':S.tok)+')':'')}
 function panel(){const L=S.laser,rows=[
  ['Laser','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
  S.mini?['Minigun','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 14/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun','Very fast fire, low damage per shot. Starts at Lv 1.',3,'Buy','m'],
  S.bolt?['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',0,'Owned','b']:['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',20,'Buy','b'],
  ['Health','Lv '+S.hpLv+': max HP '+hpMax()+', next '+(hpMax()+25),2,'Upgrade','h']];
- $('rows').innerHTML=rows.map(r=>`<div class="row"><div><b>${r[0]}</b><small>${r[1]}</small></div><button data-k="${r[4]}" data-c="${r[2]}" ${S.tok<r[2]||(r[4]=='b'&&S.bolt)?'disabled':''}>${r[3]} (${r[2]})</button></div>`).join('');$('tk2').textContent=S.tok}
-$('rows').onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=+b.dataset.c,k=b.dataset.k;if(S.tok<c)return;if(k=='b'&&S.bolt)return;S.tok-=c;if(k=='l')S.laser++;else if(k=='m')S.mini++;else if(k=='b'){S.bolt=1;S.bcd=0;}else{S.hpLv++;S.hp+=25}panel()};$('ub').onclick=()=>{panel();$('up').hidden=false};$('cl').onclick=()=>{$('up').hidden=true};$('rs').onclick=init;
-function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;if(!S.over&&$('up').hidden)update(dt);if(++fc%60==0)readTheme();hud();draw();requestAnimationFrame(loop)}
+ $('rows').innerHTML=rows.map(r=>`<div class="row"><div><b>${r[0]}</b><small>${r[1]}</small></div><button data-k="${r[4]}" data-c="${r[2]}" ${S.tok<r[2]||(r[4]=='b'&&S.bolt)?'disabled':''}>${r[3]} (${r[2]})</button></div>`).join('');$('tk2').textContent=S.infTok?'∞':S.tok}
+$('rows').onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=+b.dataset.c,k=b.dataset.k;if(S.tok<c)return;if(k=='b'&&S.bolt)return;if(!S.infTok)S.tok-=c;if(k=='l')S.laser++;else if(k=='m')S.mini++;else if(k=='b'){S.bolt=1;S.bcd=0;}else{S.hpLv++;S.hp+=25}panel()};$('ub').onclick=()=>{panel();$('up').hidden=false};$('cl').onclick=()=>{$('up').hidden=true};$('rs').onclick=init;
+
+$('sb').onclick=()=>{
+ S.speed=S.speed===1?2:1;
+ $('sb').textContent=S.speed===2?'1x Speed':'2x Speed';$('sb').classList.toggle('ghost',S.speed===1);
+};
+
+$('db').onclick=()=>{
+ if(!S.devAuth){
+  $('dtPassArea').hidden=false;
+  $('dtContent').hidden=true;
+  $('dtPass').value='';$('dtErr').textContent='';
+ }else{
+  $('dtPassArea').hidden=true;
+  $('dtContent').hidden=false;
+  updateDevUi();
+ }
+ $('dt').hidden=false;
+};
+
+function checkPass(){
+ if($('dtPass').value==='2408'){
+  S.devAuth=true;
+  $('dtPassArea').hidden=true;
+  $('dtContent').hidden=false;
+  updateDevUi();
+ }else{
+  $('dtErr').textContent='Incorrect password.';
+ }
+}
+
+$('dtSub').onclick=checkPass;
+$('dtPass').onkeydown=e=>{if(e.key==='Enter')checkPass();};
+$('dtCancel').onclick=()=>{$('dt').hidden=true;};
+$('dtClose').onclick=()=>{$('dt').hidden=true;};
+
+function updateDevUi(){
+ $('dtTokBtn').textContent=S.infTok?'Disable':'Enable';
+}
+
+$('dtTokBtn').onclick=()=>{
+ S.infTok=!S.infTok;
+ if(S.infTok)S.tok=999999;
+ updateDevUi();
+ hud();
+};
+
+$('dtAddTok').onclick=()=>{
+ S.tok+=10000;
+ hud();
+};
+
+function loop(t){const dt=Math.min(.05,(t-last)/1000||0)*S.speed;last=t;if(!S.over&&$('up').hidden&&$('dt').hidden)update(dt);if(++fc%60==0)readTheme();hud();draw();requestAnimationFrame(loop)}
 addEventListener('resize',resize);
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',readTheme);
 resize();init();requestAnimationFrame(loop);
