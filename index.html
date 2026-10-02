@@ -61,7 +61,7 @@ const topLv=()=>1+Math.floor((S.wave-1)/10);
 const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
 function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
 function resize(){const d=Math.min(devicePixelRatio||1,2),a=$('app');W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);cx=W/2;cy=H/2+20;R=Math.max(100,Math.min(210,Math.min(W,H)*.3));SR=Math.hypot(W,H)/2+30;readTheme()}
-function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,lightnings:[],en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],ban:0,bt:'',over:false,tgt:null,hit:0};$('go').hidden=true;$('up').hidden=true;nextWave()}
+function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,lightnings:[],en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],ban:0,bt:'',over:false,tgt:null,hit:0};$('go').hidden=true;$('up').hidden=true;nextWave()}
 function nextWave(){S.wave++;S.spawn=8+2*S.wave;S.iv=12/S.spawn;S.st=0;S.inter=0;S.ban=2.4;S.bt='Wave '+S.wave+((S.wave-1)%10==0&&S.wave>1?' - new enemy level '+topLv()+'!':'')}
 function spawn(){const t=topLv(),L=t==1?1:Math.random()<.55?t:1+Math.floor(Math.random()*t),a=Math.random()*TAU,h=Math.round((24+5*S.wave)*2**(L-1));
  S.en.push({x:cx+Math.cos(a)*SR,y:cy+Math.sin(a)*SR,L,h,m:h,v:32+4*L+Math.random()*10,d:Math.round(4*1.6**(L-1)),r:7+Math.min(L,12)*1.2,cd:0,ar:L>=6,fl:0})}
@@ -84,7 +84,12 @@ function update(dt){
    if(!pool.length) break;
    const e=pool[Math.random()*pool.length|0];
    hit(e,mDmg(S.mini)*(e.ar?1.5:1));
-   S.tr.push({x:e.x,y:e.y,t:.07});
+   // Enhance tracers: Add muzzle flash and impact burst
+   if(n===1) S.mFlashes.push({t:0.04}); // One flash per n interval
+   for(let i=0; i<4; i++) { // chaotic tracer lines
+    S.tr.push({x:e.x+(Math.random()-0.5)*10, y:e.y+(Math.random()-0.5)*10, t:0.07+Math.random()*0.05});
+   }
+   S.mImpacts.push({x:e.x, y:e.y, t:0.15}); // dynamic impact ring
    S.mcd+=1/14;
   }
  }
@@ -108,6 +113,9 @@ function update(dt){
 
  S.en=S.en.filter(e=>e.h>0);
  for(const t of S.tr)t.t-=dt;S.tr=S.tr.filter(t=>t.t>0);
+ for(const f of S.mFlashes)f.t-=dt;S.mFlashes=S.mFlashes.filter(f=>f.t>0);
+ for(const i of S.mImpacts)i.t-=dt;S.mImpacts=S.mImpacts.filter(i=>i.t>0);
+
  if(S.hp<=0){S.hp=0;S.over=true;$('gt').textContent='You held out until wave '+S.wave+'.';$('go').hidden=false;return}
  if(!S.spawn&&!S.en.length){S.inter+=dt;if(S.inter>2.5)nextWave()}
 }
@@ -116,14 +124,42 @@ function draw(){
  ctx.fillStyle=theme.bg;ctx.fillRect(0,0,W,H);
  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle=theme.range;ctx.fill();ctx.strokeStyle=theme.rline;ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
  ctx.lineCap='round';
- ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;for(const t of S.tr)line(t.x,t.y);
- if(S.tgt){ctx.strokeStyle='rgba(239,68,68,.35)';ctx.lineWidth=9;line(S.tgt.x,S.tgt.y);ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y)}
+
+ // Enhance Minigun Tracers
+ ctx.strokeStyle='#fb923c';ctx.lineWidth=3;for(const t of S.tr) { line(t.x,t.y); }
+ ctx.strokeStyle='#facc15';ctx.lineWidth=1.5;for(const t of S.tr) { line(t.x,t.y); }
+
+ // Enhance Minigun Impacts (fading expanding rings)
+ for(const i of S.mImpacts) {
+  const a=Math.max(0,i.t/0.15),r=(1-a)*15+5;
+  ctx.beginPath();ctx.arc(i.x,i.y,r,0,TAU);
+  ctx.strokeStyle=`rgba(250,204,21,${a})`;ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=`rgba(251,146,60,${a*0.3})`;ctx.fill();
+ }
+
+ // Enhance Laser (flickering width, core/halo, impact sparks)
+ if(S.tgt){
+  // dynamic wider halo with a core white-yellow beam
+  const flicker=Math.sin(performance.now()*0.05)*2+3;
+  ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;line(S.tgt.x,S.tgt.y);
+  ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y);
+  ctx.strokeStyle='#fef08a';ctx.lineWidth=1;line(S.tgt.x,S.tgt.y);
+
+  // continuous impact effect on the target
+  for(let i=0; i<3; i++) {
+   const a=Math.random()*0.8+0.2,r=Math.random()*15+5;
+   ctx.beginPath();ctx.arc(S.tgt.x,S.tgt.y,r,0,TAU);
+   ctx.strokeStyle=`rgba(239,68,68,${a})`;ctx.lineWidth=1.5;ctx.stroke();
+  }
+ }
+
  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 10px system-ui,sans-serif';
  for(const e of S.en){ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,TAU);ctx.fillStyle=e.fl>0?'#fff':col(e.L);ctx.fill();
   if(e.ar){ctx.lineWidth=3;ctx.strokeStyle='#94a3b8';ctx.stroke()}
   ctx.fillStyle='#0b1020';ctx.fillText(e.L,e.x,e.y+.5);
   if(e.h<e.m){const w=e.r*2;ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(e.x-e.r,e.y-e.r-7,w,3);ctx.fillStyle='#22c55e';ctx.fillRect(e.x-e.r,e.y-e.r-7,w*e.h/e.m,3)}}
 
+ // Bolt (Cyan lightning effect already noticeable, added more segments/dynamic width for punch)
  for(const l of S.lightnings){
   const a=Math.max(0,l.t/.4),segs=8;
   ctx.save();
@@ -134,12 +170,20 @@ function draw(){
    let ny=(l.y/segs)*i,nx=(i===segs)?l.x:l.x+(Math.random()-.5)*35;
    ctx.lineTo(nx,ny);
   }
-  ctx.strokeStyle=`rgba(56,189,248,${a})`;ctx.lineWidth=10;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  ctx.strokeStyle=`rgba(56,189,248,${a})`;ctx.lineWidth=Math.random()*4+8;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
   ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=4;ctx.stroke();
   ctx.beginPath();ctx.arc(l.x,0,45*a,0,TAU);ctx.fillStyle=`rgba(56,189,248,${a*.5})`;ctx.fill();
   ctx.beginPath();ctx.arc(l.x,l.y,(1-a)*45+10,0,TAU);ctx.strokeStyle=`rgba(250,204,21,${a})`;ctx.lineWidth=4;ctx.stroke();
   ctx.beginPath();ctx.arc(l.x,l.y,20*a,0,TAU);ctx.fillStyle=`rgba(255,255,255,${a*.8})`;ctx.fill();
   ctx.restore();
+ }
+
+ // Enhance Minigun Muzzle Flashes at the Base
+ for(const f of S.mFlashes) {
+  const a=Math.max(0,f.t/0.04),r=35*a;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);
+  ctx.fillStyle=`rgba(251,146,60,${a*0.35})`;ctx.fill();
+  ctx.fillStyle=`rgba(250,204,21,${a*0.7})`;ctx.beginPath();ctx.arc(cx,cy,r*0.6,0,TAU);ctx.fill();
  }
 
  ctx.beginPath();ctx.arc(cx,cy,MR,0,TAU);ctx.fillStyle=S.hit>0?'#ef4444':theme.core;ctx.fill();ctx.lineWidth=3;ctx.strokeStyle=theme.bg;ctx.stroke();
