@@ -18,6 +18,28 @@
     padding: 15px;
     border-radius: 8px;
   }
+  .run-name-box {
+    margin-bottom: 12px;
+  }
+  .run-name-box label {
+    font-size: 14px;
+    color: #aaa;
+    margin-right: 6px;
+  }
+  .run-name-box input {
+    background: #111;
+    color: #ffd700;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    outline: none;
+  }
+  .run-name-box input:focus {
+    border-color: #ffd700;
+  }
   canvas {
     background: #4a7c59;
     border: 3px solid #111;
@@ -66,6 +88,12 @@
 <body>
 
 <div id="game-wrapper">
+  <!-- RUN NAME INPUT -->
+  <div class="run-name-box">
+    <label for="runNameInput">Run Name:</label>
+    <input type="text" id="runNameInput" value="Run #1" placeholder="Enter run name..." maxlength="20">
+  </div>
+
   <div class="hud">
     Tokens: <span id="tokens-val">60</span> | Towers: <span id="towers-val">1</span>/2
   </div>
@@ -108,7 +136,6 @@ const ctx = canvas.getContext('2d');
 let tokens = 60;
 let buildMode = null; // 'outpost' or 'spikes'
 
-// Tower settings: range lowered (85px), total count capped at 2
 const MAX_TOWERS = 2;
 const LOWERED_RANGE = 85;
 
@@ -217,7 +244,7 @@ function upgradeSpikeDamage() {
   if (spikeUpgrades.tickUnlocked && spikeUpgrades.tickLvl < spikeUpgrades.maxTickLvl && tokens >= 5) {
     tokens -= 5;
     spikeUpgrades.tickLvl++;
-    spikeUpgrades.tickDmg += 2; // Capped max = 10 tick damage
+    spikeUpgrades.tickDmg += 2;
     updateUI();
   }
 }
@@ -226,7 +253,7 @@ function upgradeSpikeSlow() {
   if (!spikeUpgrades.extraSlowBought && tokens >= 10) {
     tokens -= 10;
     spikeUpgrades.extraSlowBought = true;
-    spikeUpgrades.slowFactor = 0.25; // 75% speed reduction
+    spikeUpgrades.slowFactor = 0.25;
     updateUI();
   }
 }
@@ -250,7 +277,6 @@ function update() {
     let e = enemies[i];
     e.currentSpeed = e.speed;
 
-    // Spike trap interactions
     spikes.forEach(s => {
       let dist = Math.hypot(e.x - s.x, e.y - s.y);
       if (dist < s.radius) {
@@ -319,7 +345,6 @@ function draw() {
     ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Metallic spike details
     ctx.strokeStyle = '#ddd';
     ctx.lineWidth = 2;
     for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
@@ -334,7 +359,6 @@ function draw() {
 
   // Towers
   towers.forEach(t => {
-    // Range ring
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -342,7 +366,6 @@ function draw() {
     ctx.stroke();
 
     if (t.type === 'castle') {
-      // Main Castle visual
       ctx.fillStyle = '#777';
       ctx.fillRect(t.x - 20, t.y - 20, 40, 40);
       
@@ -355,7 +378,6 @@ function draw() {
       ctx.fillStyle = '#332211';
       ctx.fillRect(t.x - 6, t.y + 8, 12, 12);
     } else if (t.type === 'outpost') {
-      // Extra Outpost visual
       ctx.strokeStyle = '#8B4513';
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -383,7 +405,6 @@ function draw() {
     ctx.arc(e.x, e.y, 8, 0, Math.PI * 2);
     ctx.fill();
 
-    // HP Bar
     ctx.fillStyle = '#000';
     ctx.fillRect(e.x - 10, e.y - 14, 20, 3);
     ctx.fillStyle = '#5cb85c';
