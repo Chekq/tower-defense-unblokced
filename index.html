@@ -156,7 +156,7 @@ function update(dt){
    const angle = Math.atan2(e.y - cy, e.x - cx);
    S.miniAngle = angle;
    S.recoil = 5;
-   S.shake = Math.max(S.shake, 2.2);
+   S.shake = Math.max(S.shake, 1.0); // Reduced screen shake
 
    const mx = cx + Math.cos(angle) * MR;
    const my = cy + Math.sin(angle) * MR;
@@ -185,7 +185,7 @@ function update(dt){
    const spread = (Math.random() - 0.5) * 16;
    const tx = e.x + Math.cos(angle + Math.PI/2) * spread;
    const ty = e.y + Math.sin(angle + Math.PI/2) * spread;
-   S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.08, maxT: 0.08});
+   S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14}); // Longer tracer duration
 
    for(let k=0; k<3; k++) {
     const spd = 60 + Math.random()*140;
@@ -255,7 +255,7 @@ function update(dt){
      const spread = (Math.random() - 0.5) * 14;
      const tx = best.x + Math.cos(angle + Math.PI/2) * spread;
      const ty = best.y + Math.sin(angle + Math.PI/2) * spread;
-     S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.08, maxT: 0.08});
+     S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14}); // Longer tracer duration
 
      for(let k=0; k<2; k++) {
       const spd = 50 + Math.random()*120;
@@ -422,21 +422,23 @@ function draw(){
   ctx.fill();
  }
 
- // Tracers
+ // Refined & Prominent Tracers
  for(const t of S.tr) {
   const a = t.t / t.maxT;
+  // Outer glow
   ctx.beginPath();
   ctx.moveTo(t.x1, t.y1);
   ctx.lineTo(t.x2, t.y2);
-  ctx.strokeStyle = `rgba(251, 146, 60, ${a * 0.4})`;
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = `rgba(251, 146, 60, ${a * 0.75})`;
+  ctx.lineWidth = 6;
   ctx.stroke();
 
+  // Bright core tracer line
   ctx.beginPath();
   ctx.moveTo(t.x1, t.y1);
   ctx.lineTo(t.x2, t.y2);
   ctx.strokeStyle = `rgba(254, 240, 138, ${a})`;
-  ctx.lineWidth = 1.8;
+  ctx.lineWidth = 2.5;
   ctx.stroke();
  }
 
