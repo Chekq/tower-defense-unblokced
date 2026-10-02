@@ -56,8 +56,7 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Separated Laser & Minigun Towers:</b> Buying the Minigun upgrade now splits your main base into two distinct towers (Laser on the left, Minigun on the right) with independent targeting!</li>
-   <li><b>Redesigned Minigun Visuals:</b> Minigun features a 6-barrel Gatling array with 3D rotation effects.</li>
+   <li><b>Redesigned Minigun Visuals:</b> Main tower minigun now features a 6-barrel Gatling array with 3D rotation effects.</li>
    <li><b>Ammo Belt & Receiver Details:</b> Added side ammo feeding belt and heat ventilation slots on the gun casing.</li>
    <li><b>Enhanced Muzzle Flashes:</b> Multi-pointed explosive starburst flashes with high-temperature white centers.</li>
   </ul>
@@ -113,11 +112,11 @@ const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
 const MR=14,TAU=6.283185307179586,TOWER_RANGE=200,MAX_TOWERS=2;
-let W,H,cx,cy,R,SR,S,last=0,theme={};
+let W,H,cx,cy,R,SR,S,last=0,fc=0,theme={};
 const lDps=l=>24+9*(l-1),mDmg=l=>1.3+.55*(l-1),hpMax=()=>100+25*S.hpLv;
 const topLv=()=>1+Math.floor((S.wave-1)/10);
 const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
-function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute','line','panel','acc'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
+function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
 function resize(){
  const d=Math.min(devicePixelRatio||1,2),a=$('app');
  W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
@@ -185,34 +184,17 @@ function update(dt){
   if(d>MR+e.r){e.x+=dx/d*e.v*dt;e.y+=dy/d*e.v*dt}else{e.cd-=dt;if(e.cd<=0){e.cd=1;S.hp-=e.d;S.hit=.15}}
   if(d-e.r<=R){inr.push(e);if(d<nd){nd=d;near=e}}}
  S.tgt=near;
-
- // Central Laser Tower targeting & damage
- const lPos = S.mini > 0 ? {x: cx - 22, y: cy} : {x: cx, y: cy};
- let laserNear = null, lnd = 1e9;
- for(const e of inr) {
-  const dist = Math.hypot(e.x - lPos.x, e.y - lPos.y);
-  if(dist < lnd) { lnd = dist; laserNear = e; }
- }
- S.laserTgt = laserNear;
- if(laserNear) hit(laserNear, lDps(S.laser)*dt*(laserNear.ar?.75:1));
+ if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
  
- // Central Minigun Tower targeting & damage (Independent Tower at cx + 22)
  if(S.mini){
-  const mPos = {x: cx + 22, y: cy};
-  const mInr = [];
-  for(const e of S.en) {
-   if(e.h <= 0) continue;
-   if(Math.hypot(e.x - mPos.x, e.y - mPos.y) - e.r <= R) mInr.push(e);
-  }
-
-  const arm = mInr.filter(e=>e.ar&&e.h>0);
-  const pool = arm.length ? arm : mInr.filter(e=>e.h>0);
+  const arm = inr.filter(e=>e.ar&&e.h>0);
+  const pool = arm.length ? arm : inr.filter(e=>e.h>0);
   if(pool.length){
    const target = pool[0];
-   S.miniAngle = Math.atan2(target.y - mPos.y, target.x - mPos.x);
+   S.miniAngle = Math.atan2(target.y - cy, target.x - cx);
   }
 
-  if(mInr.length){
+  if(inr.length){
    S.mcd-=dt;
    let n=0;
    while(S.mcd<=0&&n++<8){
@@ -220,22 +202,22 @@ function update(dt){
     if(!e) break;
     hit(e,mDmg(S.mini)*(e.ar?1.5:1));
 
-    const angle = Math.atan2(e.y - mPos.y, e.x - mPos.x);
+    const angle = Math.atan2(e.y - cy, e.x - cx);
     S.miniAngle = angle;
     S.recoil = 4;
     S.shake = Math.max(S.shake, 0.8);
     S.barrelSpin = (S.barrelSpin || 0) + 1.25;
     S.heat = Math.min(1, S.heat + 0.035);
 
-    const barrelTipX = mPos.x + Math.cos(angle) * (MR + 20);
-    const barrelTipY = mPos.y + Math.sin(angle) * (MR + 20);
+    const barrelTipX = cx + Math.cos(angle) * (MR + 32);
+    const barrelTipY = cy + Math.sin(angle) * (MR + 32);
 
     S.mFlashes.push({x: barrelTipX, y: barrelTipY, angle, t: 0.05, maxT: 0.05});
 
     const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
     const brassSpd = 80 + Math.random() * 110;
     S.shells.push({
-     x: mPos.x + Math.cos(angle)*10, y: mPos.y + Math.sin(angle)*10,
+     x: cx + Math.cos(angle)*10, y: cy + Math.sin(angle)*10,
      vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
      rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
      t: 0.4 + Math.random()*0.2, maxT: 0.6
@@ -429,7 +411,7 @@ function update(dt){
  if(!S.spawn&&!S.en.length){S.inter+=dt;if(S.inter>2.5)nextWave()}
 }
 
-function lineFrom(x1,y1,x2,y2){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
+function line(x,y){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke()}
 
 function draw(){
  ctx.save();
@@ -525,17 +507,15 @@ function draw(){
   ctx.fill();
  }
 
- // Central Laser Beam drawing
- const lPos = S.mini > 0 ? {x: cx - 22, y: cy} : {x: cx, y: cy};
- if(S.laserTgt){
+ if(S.tgt){
   const flicker=Math.sin(performance.now()*0.05)*2+3;
-  ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;lineFrom(lPos.x, lPos.y, S.laserTgt.x, S.laserTgt.y);
-  ctx.strokeStyle='#ef4444';ctx.lineWidth=3;lineFrom(lPos.x, lPos.y, S.laserTgt.x, S.laserTgt.y);
-  ctx.strokeStyle='#fef08a';ctx.lineWidth=1;lineFrom(lPos.x, lPos.y, S.laserTgt.x, S.laserTgt.y);
+  ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;line(S.tgt.x,S.tgt.y);
+  ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y);
+  ctx.strokeStyle='#fef08a';ctx.lineWidth=1;line(S.tgt.x,S.tgt.y);
 
   for(let i=0; i<3; i++) {
    const a=Math.random()*0.8+0.2,r=Math.random()*15+5;
-   ctx.beginPath();ctx.arc(S.laserTgt.x,S.laserTgt.y,r,0,TAU);
+   ctx.beginPath();ctx.arc(S.tgt.x,S.tgt.y,r,0,TAU);
    ctx.strokeStyle=`rgba(239,68,68,${a})`;ctx.lineWidth=1.5;ctx.stroke();
   }
  }
@@ -674,6 +654,7 @@ function draw(){
   ctx.translate(mf.x, mf.y);
   ctx.rotate(mf.angle);
   
+  // Dynamic multi-pointed star burst
   ctx.beginPath();
   for(let k=0; k<8; k++) {
    const ang = (k * Math.PI / 4);
@@ -687,6 +668,7 @@ function draw(){
   ctx.fillStyle = `rgba(251, 146, 60, ${a})`;
   ctx.fill();
 
+  // White-hot core flare
   ctx.beginPath();
   ctx.arc(0, 0, 7 * a, 0, TAU);
   ctx.fillStyle = `rgba(254, 240, 138, ${a})`;
@@ -700,52 +682,22 @@ function draw(){
   ctx.restore();
  }
 
- // RENDER MAIN BASE & DUAL TOWER MOUNTS
  ctx.save();
  ctx.translate(cx, cy);
 
- // Draw base platform connection plate if Minigun exists
- if(S.mini > 0) {
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 36, 18, 0, 0, TAU);
-  ctx.fillStyle = theme.panel; ctx.fill();
-  ctx.strokeStyle = theme.line; ctx.lineWidth = 3; ctx.stroke();
-  
-  ctx.fillStyle = '#334155';
-  ctx.fillRect(-22, -6, 44, 12);
+ if(S.mini && S.miniAngle !== undefined) {
+  ctx.rotate(S.miniAngle);
  }
 
- // 1. Laser Tower Mount (Left if split, Center if alone)
- ctx.save();
- ctx.translate(S.mini > 0 ? -22 : 0, 0);
+ if(S.mini && S.recoil > 0) {
+  ctx.translate(-S.recoil, 0);
+ }
 
  ctx.beginPath(); ctx.arc(0, 0, MR, 0, TAU);
  ctx.fillStyle = S.hit > 0 ? '#ef4444' : theme.core; ctx.fill();
  ctx.lineWidth = 3; ctx.strokeStyle = theme.bg; ctx.stroke();
 
- if(S.laserTgt) {
-  const lAngle = Math.atan2(S.laserTgt.y - cy, S.laserTgt.x - (S.mini > 0 ? cx - 22 : cx));
-  ctx.rotate(lAngle);
-  ctx.fillStyle = '#ef4444';
-  ctx.fillRect(0, -3, 14, 6);
-  ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU); ctx.fillStyle = '#ef4444'; ctx.fill();
- } else {
-  ctx.beginPath(); ctx.arc(0, 0, 5, 0, TAU); ctx.fillStyle = '#ef4444'; ctx.fill();
- }
- ctx.restore();
-
- // 2. Minigun Tower Mount (Right Tower when Minigun is bought)
  if(S.mini) {
-  ctx.save();
-  ctx.translate(22, 0);
-
-  if(S.miniAngle !== undefined) ctx.rotate(S.miniAngle);
-  if(S.recoil > 0) ctx.translate(-S.recoil, 0);
-
-  ctx.beginPath(); ctx.arc(0, 0, MR, 0, TAU);
-  ctx.fillStyle = theme.core; ctx.fill();
-  ctx.lineWidth = 3; ctx.strokeStyle = theme.bg; ctx.stroke();
-
   const spin = S.barrelSpin || 0;
   const h = S.heat || 0;
 
@@ -806,7 +758,7 @@ function draw(){
     z: Math.cos(bAngle)
    });
   }
-  barrelList.sort((a,b) => a.z - b.z);
+  barrelList.sort((a,b) => a.z - b.z); // Render back barrels first for depth
 
   for(const bar of barrelList) {
    const pScale = 0.75 + (bar.z + 1) * 0.25;
@@ -832,7 +784,6 @@ function draw(){
   // Center Shaft Hub Cap
   ctx.beginPath(); ctx.arc(8, 0, 4, 0, TAU); ctx.fillStyle = '#475569'; ctx.fill();
   ctx.beginPath(); ctx.arc(8, 0, 2, 0, TAU); ctx.fillStyle = '#0f172a'; ctx.fill();
-  ctx.restore();
  }
 
  ctx.restore();
@@ -857,8 +808,8 @@ function panel(){
   : ['Extra Tower', `Placed: ${tCount}/${MAX_TOWERS}. Auto-shoots at nearby enemies.`, 20, 'Buy', 't'];
 
  const rows=[
-  ['Laser Tower','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
-  S.mini?['Minigun Tower','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 16/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun Tower','Splits base into 2 towers. Fast kinetic fire.',3,'Buy','m'],
+  ['Laser','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
+  S.mini?['Minigun','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 16/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun','Very fast fire, low damage per shot. Starts at Lv 1.',3,'Buy','m'],
   S.bolt?['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',0,'Owned','b']:['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',20,'Buy','b'],
   extraTowerRow,
   ['Health','Lv '+S.hpLv+': max HP '+hpMax()+', next '+(hpMax()+25),2,'Upgrade','h']
@@ -940,120 +891,118 @@ $('rows').onclick=e=>{
   return;
  }
 
- if(k==='t') {
-  S.placingTower = true;
-  $('placeBanner').hidden = false;
-  $('up').hidden = true;
-  return;
- }
-
  if(!S.infTok)S.tok-=c;
  if(k=='l')S.laser++;
- else if(k=='m'){ if(!S.mini) S.mini=1; else S.mini++; }
- else if(k=='b')S.bolt=1;
- else if(k=='h'){S.hpLv++;S.hp+=25}
- panel();hud();
-}
+ else if(k=='m')S.mini++;
+ else if(k=='b'){S.bolt=1;S.bcd=0;}
+ else if(k=='t'){
+  S.placingTower=true;
+  $('up').hidden=true;
+  $('placeBanner').hidden=false;
+ }
+ else{S.hpLv++;S.hp+=25}
+ panel();
+};
 
-cv.onmousemove = e => {
+cv.onpointermove = e => {
  const rect = cv.getBoundingClientRect();
- S.mousePos.x = e.clientX - rect.left;
- S.mousePos.y = e.clientY - rect.top;
+ S.mousePos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
 };
 
 cv.onclick = e => {
  const rect = cv.getBoundingClientRect();
- const mx = e.clientX - rect.left;
- const my = e.clientY - rect.top;
+ const x = e.clientX - rect.left;
+ const y = e.clientY - rect.top;
 
  if(S.placingTower) {
-  S.towers.push({
-   x: mx, y: my,
-   type: S.extraType,
-   level: S.extraType === 'laser' ? S.extraLaserLv : S.extraMiniLv,
-   mcd: 0, heat: 0
-  });
+  const currentLv = S.extraType === 'laser' ? S.extraLaserLv : S.extraMiniLv;
+  S.towers.push({ x, y, type: S.extraType, level: currentLv, mcd: 0, recoil: 0, angle: 0, tgt: null, heat: 0 });
   S.placingTower = false;
   $('placeBanner').hidden = true;
   return;
  }
 
- for(const tw of S.towers) {
-  if(Math.hypot(tw.x - mx, tw.y - my) < 16) {
-   S.selectedTower = tw;
-   openTowerPanel();
-   return;
-  }
+ const clicked = S.towers.find(tw => Math.hypot(tw.x - x, tw.y - y) <= 18);
+ if(clicked) {
+  S.selectedTower = clicked;
+  openTowerPanel();
+ } else {
+  S.selectedTower = null;
  }
- S.selectedTower = null;
 };
+
+$('ub').onclick=()=>{panel();$('up').hidden=false};$('cl').onclick=()=>{$('up').hidden=true};$('tpClose').onclick=()=>{$('tp').hidden=true};$('rs').onclick=init;
 
 $('sb').onclick=()=>{
- S.speed = S.speed === 1 ? 2 : 1;
- $('sb').textContent = S.speed === 2 ? '1x Speed' : '2x Speed';$('sb').classList.toggle('active-speed', S.speed === 2);
-};
-
-$('ub').onclick=()=>{panel();$('up').hidden=false};
-$('cl').onclick=()=>{$'up'.hidden=true};
-$('tpClose').onclick=()=>{$'tp'.hidden=true};
-$('rs').onclick=init;
-
-// Dev Tools logic
-$('db').onclick = () => {$('dtErr').textContent = '';
- $('dtPass').value = '';$('dtPassArea').hidden = S.devAuth;
- $('dtContent').hidden = !S.devAuth;
- $('dt').hidden = false;
-};
-
-$('dtSub').onclick = () => {
- if($('dtPass').value === 'admin') {
-  S.devAuth = true;
-  $('dtPassArea').hidden = true;
-  $('dtContent').hidden = false;
- } else {
-  $('dtErr').textContent = 'Incorrect password.';
+ S.speed=S.speed===1?2:1;
+ if(S.speed===2){
+  $('sb').textContent='2x Active (1x)';$('sb').classList.add('active-speed');
+ }else{
+  $('sb').textContent='2x Speed';$('sb').classList.remove('active-speed');
  }
 };
 
-$('dtCancel').onclick = () => {$('dt').hidden = true; };
-$('dtClose').onclick = () => {$('dt').hidden = true; };
-
-$('dtTokBtn').onclick = () => {
- S.infTok = !S.infTok;
- $('dtTokBtn').textContent = S.infTok ? 'Disable' : 'Enable';
- hud();
-};
-
-$('dtAddTok').onclick = () => {
- S.tok += 10000;
- hud();
-};
-
-$('dtSpawn5L1').onclick = () => {
- for(let i=0; i<5; i++) spawn(1);
-};
-
-window.onresize=resize;
-window.onload=()=>{
- resize();
- checkPatchNotes();
- init();
- function loop(now){
-  if(!last)last=now;
-  let dt=(now-last)/1000;
-  last=now;
-  if(dt > 0.1) dt = 0.1;
-  dt *= S.speed;
-
-  if(!S.over && $('up').hidden &&$('dt').hidden && $('pn').hidden &&$('tp').hidden){
-   update(dt);
-  }
-  draw();
-  hud();
-  requestAnimationFrame(loop);
+$('db').onclick=()=>{
+ if(!S.devAuth){
+  $('dtPassArea').hidden=false;
+  $('dtContent').hidden=true;
+  $('dtPass').value='';$('dtErr').textContent='';
+ }else{
+  $('dtPassArea').hidden=true;
+  $('dtContent').hidden=false;
+  updateDevUi();
  }
- requestAnimationFrame(loop);
+ $('dt').hidden=false;
+};
+
+function checkPass(){
+ if($('dtPass').value==='2408'){
+  S.devAuth=true;
+  $('dtPassArea').hidden=true;
+  $('dtContent').hidden=false;
+  updateDevUi();
+ }else{
+  $('dtErr').textContent='Incorrect password.';
+ }
 }
+
+$('dtSub').onclick=checkPass;
+$('dtPass').onkeydown=e=>{if(e.key==='Enter')checkPass();};
+$('dtCancel').onclick=()=>{$('dt').hidden=true;};
+$('dtClose').onclick=()=>{$('dt').hidden=true;};
+
+function updateDevUi(){
+ $('dtTokBtn').textContent=S.infTok?'Disable':'Enable';
+}
+
+$('dtTokBtn').onclick=()=>{
+ S.infTok=!S.infTok;
+ if(S.infTok)S.tok=999999;
+ updateDevUi();
+ hud();
+};
+
+$('dtAddTok').onclick=()=>{
+ S.tok+=10000;
+ hud();
+};
+
+$('dtSpawn5L1').onclick=()=>{
+ for(let i=0;i<5;i++) spawn(1);
+ hud();
+};
+
+function loop(t){
+ const dt=Math.min(.05,(t-last)/1000||0)*S.speed;
+ last=t;
+ if(!S.over&&$('up').hidden&&$('dt').hidden&&$('tp').hidden&&$('pn').hidden) update(dt);
+ if(++fc%60==0)readTheme();
+ hud();draw();requestAnimationFrame(loop);
+}
+
+addEventListener('resize',resize);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',readTheme);
+resize();init();checkPatchNotes();requestAnimationFrame(loop);
 </script>
 </body>
 </html>
