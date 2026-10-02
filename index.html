@@ -40,69 +40,69 @@ h2{margin:0 0 6px;font-size:18px}
 <canvas id="c"></canvas>
 <div id="placeBanner" hidden>Click anywhere on the map to place your extra tower!</div>
 <div class="hud">
- <div class="box"><b id="wv"></b><div class="mute" id="lf"></div></div>
- <div class="box"><div id="hpt"></div><div class="bar"><i id="hpb"></i></div></div>
- <div class="box"><div>Tokens: <b id="tk">0</b></div><div class="bar" id="tb" title="Progress to next token"><i></i></div></div>
- <div class="hud-btns">
-  <button id="sb">2x Speed</button>
-  <button id="ub">Upgrades</button>
-  <button id="db" class="ghost">Dev Tools</button>
- </div>
+ <div class="box"><b id="wv"></b><div class="mute" id="lf"></div></div>
+ <div class="box"><div id="hpt"></div><div class="bar"><i id="hpb"></i></div></div>
+ <div class="box"><div>Tokens: <b id="tk">0</b></div><div class="bar" id="tb" title="Progress to next token"><i></i></div></div>
+ <div class="hud-btns">
+  <button id="sb">2x Speed</button>
+  <button id="ub">Upgrades</button>
+  <button id="db" class="ghost">Dev Tools</button>
+ </div>
 </div>
 
 <!-- Patch Notes Overlay -->
 <div class="ov" id="pn" hidden><div class="card">
- <h2>What's New (<span id="pnVer"></span>)</h2>
- <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
- <div id="pnList" style="margin-bottom:16px;">
-  <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Redesigned Minigun Visuals:</b> Main tower minigun now features a 6-barrel Gatling array with 3D rotation effects.</li>
-   <li><b>Ammo Belt & Receiver Details:</b> Added side ammo feeding belt and heat ventilation slots on the gun casing.</li>
-   <li><b>Enhanced Muzzle Flashes:</b> Multi-pointed explosive starburst flashes with high-temperature white centers.</li>
-  </ul>
- </div>
- <button id="pnClose" style="width:100%;">Got it!</button>
+ <h2>What's New (<span id="pnVer"></span>)</h2>
+ <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
+ <div id="pnList" style="margin-bottom:16px;">
+  <ul style="padding-left:18px;margin:0;line-height:1.6;">
+   <li><b>Redesigned Minigun Visuals:</b> Main tower minigun now features a 6-barrel Gatling array with 3D rotation effects.</li>
+   <li><b>Ammo Belt & Receiver Details:</b> Added side ammo feeding belt and heat ventilation slots on the gun casing.</li>
+   <li><b>Enhanced Muzzle Flashes:</b> Multi-pointed explosive starburst flashes with high-temperature white centers.</li>
+  </ul>
+ </div>
+ <button id="pnClose" style="width:100%;">Got it!</button>
 </div></div>
 
 <div class="ov" id="up" hidden><div class="card">
- <h2>Upgrades</h2>
- <div class="mute">Game paused. Tokens: <b id="tk2"></b></div>
- <div id="rows"></div>
- <div class="row"><small>Enemies from Lv 6 are armored (grey ring). Minigun deals ×1.5 to them, Laser ×0.75.</small></div>
- <button id="cl" class="ghost">Resume</button>
+ <h2>Upgrades</h2>
+ <div class="mute">Game paused. Tokens: <b id="tk2"></b></div>
+ <div id="rows"></div>
+ <div class="row"><small>Enemies from Lv 6 are armored (grey ring). Minigun deals ×1.5 to them, Laser ×0.75.</small></div>
+ <button id="cl" class="ghost">Resume</button>
 </div></div>
 <div class="ov" id="tp" hidden><div class="card">
- <h2>Extra Towers Upgrades</h2>
- <div class="mute">Tokens: <b id="tk3"></b></div>
- <div id="tRows"></div>
- <button id="tpClose" class="ghost" style="margin-top:12px;width:100%;">Close</button>
+ <h2>Extra Towers Upgrades</h2>
+ <div class="mute">Tokens: <b id="tk3"></b></div>
+ <div id="tRows"></div>
+ <button id="tpClose" class="ghost" style="margin-top:12px;width:100%;">Close</button>
 </div></div>
 <div class="ov" id="dt" hidden><div class="card">
- <h2>Dev Tools</h2>
- <div id="dtPassArea">
-  <div class="mute" style="margin-bottom:8px;">Enter password to unlock developer cheats:</div>
-  <input type="password" id="dtPass" placeholder="Password" style="width:100%;padding:8px;box-sizing:border-box;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px;">
-  <div style="display:flex;gap:8px;">
-   <button id="dtSub">Unlock</button>
-   <button id="dtCancel" class="ghost">Cancel</button>
-  </div>
-  <div id="dtErr" style="color:#ef4444;margin-top:8px;font-size:12px;"></div>
- </div>
- <div id="dtContent" hidden>
-  <div class="row">
-   <div><b>Unlimited Tokens</b><small>Locks tokens at maximum</small></div>
-   <button id="dtTokBtn">Enable</button>
-  </div>
-  <div class="row">
-   <div><b>Add +10,000 Tokens</b><small>Instant token grant</small></div>
-   <button id="dtAddTok">+10k Tokens</button>
-  </div>
-  <div class="row">
-   <div><b>Spawn 5x Level 1 Enemies</b><small>Spawns 5 Level 1 enemies instantly</small></div>
-   <button id="dtSpawn5L1">+5 Lv1</button>
-  </div>
-  <button id="dtClose" class="ghost" style="margin-top:12px;width:100%;">Close</button>
- </div>
+ <h2>Dev Tools</h2>
+ <div id="dtPassArea">
+  <div class="mute" style="margin-bottom:8px;">Enter password to unlock developer cheats:</div>
+  <input type="password" id="dtPass" placeholder="Password" style="width:100%;padding:8px;box-sizing:border-box;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px;">
+  <div style="display:flex;gap:8px;">
+   <button id="dtSub">Unlock</button>
+   <button id="dtCancel" class="ghost">Cancel</button>
+  </div>
+  <div id="dtErr" style="color:#ef4444;margin-top:8px;font-size:12px;"></div>
+ </div>
+ <div id="dtContent" hidden>
+  <div class="row">
+   <div><b>Unlimited Tokens</b><small>Locks tokens at maximum</small></div>
+   <button id="dtTokBtn">Enable</button>
+  </div>
+  <div class="row">
+   <div><b>Add +10,000 Tokens</b><small>Instant token grant</small></div>
+   <button id="dtAddTok">+10k Tokens</button>
+  </div>
+  <div class="row">
+   <div><b>Spawn 5x Level 1 Enemies</b><small>Spawns 5 Level 1 enemies instantly</small></div>
+   <button id="dtSpawn5L1">+5 Lv1</button>
+  </div>
+  <button id="dtClose" class="ghost" style="margin-top:12px;width:100%;">Close</button>
+ </div>
 </div></div>
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
@@ -118,891 +118,772 @@ const topLv=()=>1+Math.floor((S.wave-1)/10);
 const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
 function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
 function resize(){
- const d=Math.min(devicePixelRatio||1,2),a=$('app');
- W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
- ctx.setTransform(d,0,0,d,0,0);
- cx=W/2;cy=H/2+15;
- R=Math.max(130,Math.min(270,Math.min(W,H)*.36));
- SR=Math.hypot(W,H)/2+60;
- readTheme();
+ const d=Math.min(devicePixelRatio||1,2),a=$('app');
+ W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
+ ctx.setTransform(d,0,0,d,0,0);
+ cx=W/2;cy=H/2+15;
+ R=Math.max(130,Math.min(270,Math.min(W,H)*.36));
+ SR=Math.hypot(W,H)/2+60;
+ readTheme();
 }
 
 function checkPatchNotes(){
- const savedVer = localStorage.getItem('last_stand_version');
- $('pnVer').textContent = GAME_VERSION;
- if(savedVer !== GAME_VERSION){
-  $('pn').hidden = false;
- }
+ const savedVer = localStorage.getItem('last_stand_version');
+ $('pnVer').textContent = GAME_VERSION;
+ if(savedVer !== GAME_VERSION){
+  $('pn').hidden = false;
+ }
 }
 
 $('pnClose').onclick = () => {
- $('pn').hidden = true;
- localStorage.setItem('last_stand_version', GAME_VERSION);
+ $('pn').hidden = true;
+ localStorage.setItem('last_stand_version', GAME_VERSION);
 };
 
 function init(){
- S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,
-    lightnings:[],sparks:[],shells:[],miniSmoke:[],miniSparks:[],en:[],
-    spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],
-    ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false,
-    shake:0,flash:0,recoil:0,miniAngle:0,barrelSpin:0,heat:0,
-    towers:[],extraLaserLv:1,extraMiniLv:1,extraType:'laser',
-    placingTower:false,selectedTower:null,mousePos:{x:0,y:0}};
- $('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;$('tp').hidden=true;$('placeBanner').hidden=true;
- nextWave();
+ S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,
+    lightnings:[],sparks:[],shells:[],miniSmoke:[],miniSparks:[],en:[],
+    spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],
+    ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false,
+    shake:0,flash:0,recoil:0,miniAngle:0,barrelSpin:0,heat:0,
+    towers:[],extraLaserLv:1,extraMiniLv:1,extraType:'laser',
+    placingTower:false,selectedTower:null,mousePos:{x:0,y:0}};
+ $('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;$('tp').hidden=true;$('placeBanner').hidden=true;
+ nextWave();
 }
 
 function nextWave(){S.wave++;S.spawn=8+2*S.wave;S.iv=12/S.spawn;S.st=0;S.inter=0;S.ban=2.4;S.bt='Wave '+S.wave+((S.wave-1)%10==0&&S.wave>1?' - new enemy level '+topLv()+'!':'')}
 function spawn(forcedL=null){
- const t=topLv(),L=forcedL!==null?forcedL:(t==1?1:Math.random()<.55?t:1+Math.floor(Math.random()*t)),a=Math.random()*TAU,h=Math.round((24+5*S.wave)*2**(L-1));
- S.en.push({x:cx+Math.cos(a)*SR,y:cy+Math.sin(a)*SR,L,h,m:h,v:32+4*L+Math.random()*10,d:Math.round(4*1.6**(L-1)),r:7+Math.min(L,12)*1.2,cd:0,ar:L>=6,fl:0})
+ const t=topLv(),L=forcedL!==null?forcedL:(t==1?1:Math.random()<.55?t:1+Math.floor(Math.random()*t)),a=Math.random()*TAU,h=Math.round((24+5*S.wave)*2**(L-1));
+ S.en.push({x:cx+Math.cos(a)*SR,y:cy+Math.sin(a)*SR,L,h,m:h,v:32+4*L+Math.random()*10,d:Math.round(4*1.6**(L-1)),r:7+Math.min(L,12)*1.2,cd:0,ar:L>=6,fl:0})
 }
 function hit(e,d){if(e.h<=0)return;S.acc+=Math.min(d,e.h);e.h-=d;e.fl=.08;let t=thr();while(S.acc>=t){S.acc-=t;if(!S.infTok)S.tok++;t=thr()}}
 
 function generateBoltPoints(startX, startY, endX, endY, segs) {
- const pts = [{x: startX, y: startY}];
- for(let i=1; i<segs; i++){
-  const ratio = i/segs;
-  const nx = startX + (endX - startX) * ratio + (Math.random() - 0.5) * 45;
-  const ny = startY + (endY - startY) * ratio + (Math.random() - 0.5) * 20;
-  pts.push({x: nx, y: ny});
- }
- pts.push({x: endX, y: endY});
- return pts;
+ const pts = [{x: startX, y: startY}];
+ for(let i=1; i<segs; i++){
+  const ratio = i/segs;
+  const nx = startX + (endX - startX) * ratio + (Math.random() - 0.5) * 45;
+  const ny = startY + (endY - startY) * ratio + (Math.random() - 0.5) * 20;
+  pts.push({x: nx, y: ny});
+ }
+ pts.push({x: endX, y: endY});
+ return pts;
 }
 
 function update(dt){
- if(S.infTok)S.tok=999999;
- if(S.ban>0)S.ban-=dt;if(S.hit>0)S.hit-=dt;
- S.shake = Math.max(0, S.shake - dt * 35);
- S.flash = Math.max(0, S.flash - dt * 3);
- S.recoil = Math.max(0, S.recoil - dt * 30);
+ if(S.infTok)S.tok=999999;
+ if(S.ban>0)S.ban-=dt;if(S.hit>0)S.hit-=dt;
+ S.shake = Math.max(0, S.shake - dt * 35);
+ S.flash = Math.max(0, S.flash - dt * 3);
+ S.recoil = Math.max(0, S.recoil - dt * 30);
 
- if(S.spawn>0){S.st-=dt;while(S.st<=0&&S.spawn>0){spawn();S.spawn--;S.st+=S.iv}}
- const inr=[];let near=null,nd=1e9;
- for(const e of S.en){const dx=cx-e.x,dy=cy-e.y,d=Math.hypot(dx,dy);e.fl=Math.max(0,e.fl-dt);
-  if(d>MR+e.r){e.x+=dx/d*e.v*dt;e.y+=dy/d*e.v*dt}else{e.cd-=dt;if(e.cd<=0){e.cd=1;S.hp-=e.d;S.hit=.15}}
-  if(d-e.r<=R){inr.push(e);if(d<nd){nd=d;near=e}}}
- S.tgt=near;
- if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
- 
- if(S.mini){
-  const arm = inr.filter(e=>e.ar&&e.h>0);
-  const pool = arm.length ? arm : inr.filter(e=>e.h>0);
-  if(pool.length){
-   const target = pool[0];
-   S.miniAngle = Math.atan2(target.y - cy, target.x - cx);
-  }
+ if(S.spawn>0){S.st-=dt;while(S.st<=0&&S.spawn>0){spawn();S.spawn--;S.st+=S.iv}}
+ const inr=[];let near=null,nd=1e9;
+ for(const e of S.en){const dx=cx-e.x,dy=cy-e.y,d=Math.hypot(dx,dy);e.fl=Math.max(0,e.fl-dt);
+  if(d>MR+e.r){e.x+=dx/d*e.v*dt;e.y+=dy/d*e.v*dt}else{e.cd-=dt;if(e.cd<=0){e.cd=1;S.hp-=e.d;S.hit=.15}}
+  if(d-e.r<=R){inr.push(e);if(d<nd){nd=d;near=e}}}
+ S.tgt=near;
+ if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
+ 
+ if(S.mini){
+  const arm = inr.filter(e=>e.ar&&e.h>0);
+  const pool = arm.length ? arm : inr.filter(e=>e.h>0);
+  if(pool.length){
+   const target = pool[0];
+   S.miniAngle = Math.atan2(target.y - cy, target.x - cx);
+  }
 
-  if(inr.length){
-   S.mcd-=dt;
-   let n=0;
-   while(S.mcd<=0&&n++<8){
-    const e=pool[Math.random()*pool.length|0];
-    if(!e) break;
-    hit(e,mDmg(S.mini)*(e.ar?1.5:1));
+  if(inr.length){
+   S.mcd-=dt;
+   let n=0;
+   while(S.mcd<=0&&n++<8){
+    const e=pool[Math.random()*pool.length|0];
+    if(!e) break;
+    hit(e,mDmg(S.mini)*(e.ar?1.5:1));
 
-    const angle = Math.atan2(e.y - cy, e.x - cx);
-    S.miniAngle = angle;
-    S.recoil = 4;
-    S.shake = Math.max(S.shake, 0.8);
-    S.barrelSpin = (S.barrelSpin || 0) + 1.25;
-    S.heat = Math.min(1, S.heat + 0.035);
+    const angle = Math.atan2(e.y - cy, e.x - cx);
+    S.miniAngle = angle;
+    S.recoil = 4;
+    S.shake = Math.max(S.shake, 0.8);
+    S.barrelSpin = (S.barrelSpin || 0) + 1.25;
+    S.heat = Math.min(1, S.heat + 0.035);
 
-    const barrelTipX = cx + Math.cos(angle) * (MR + 32);
-    const barrelTipY = cy + Math.sin(angle) * (MR + 32);
+    const barrelTipX = cx + Math.cos(angle) * (MR + 32);
+    const barrelTipY = cy + Math.sin(angle) * (MR + 32);
 
-    S.mFlashes.push({x: barrelTipX, y: barrelTipY, angle, t: 0.05, maxT: 0.05});
+    S.mFlashes.push({x: barrelTipX, y: barrelTipY, angle, t: 0.05, maxT: 0.05});
 
-    const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
-    const brassSpd = 80 + Math.random() * 110;
-    S.shells.push({
-     x: cx + Math.cos(angle)*10, y: cy + Math.sin(angle)*10,
-     vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
-     rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
-     t: 0.4 + Math.random()*0.2, maxT: 0.6
-    });
+    const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
+    const brassSpd = 80 + Math.random() * 110;
+    S.shells.push({
+     x: cx + Math.cos(angle)*10, y: cy + Math.sin(angle)*10,
+     vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
+     rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
+     t: 0.4 + Math.random()*0.2, maxT: 0.6
+    });
 
-    if(Math.random()<0.45){
-     S.miniSmoke.push({
-      x: barrelTipX, y: barrelTipY,
-      vx: Math.cos(angle)*25 + (Math.random()-0.5)*20,
-      vy: Math.sin(angle)*25 + (Math.random()-0.5)*20,
-      r: 3 + Math.random()*3,
-      t: 0.35, maxT: 0.35
-     });
-    }
+    if(Math.random()<0.45){
+     S.miniSmoke.push({
+      x: barrelTipX, y: barrelTipY,
+      vx: Math.cos(angle)*25 + (Math.random()-0.5)*20,
+      vy: Math.sin(angle)*25 + (Math.random()-0.5)*20,
+      r: 3 + Math.random()*3,
+      t: 0.35, maxT: 0.35
+     });
+    }
 
-    const spread = (Math.random() - 0.5) * 16;
-    const tx = e.x + Math.cos(angle + Math.PI/2) * spread;
-    const ty = e.y + Math.sin(angle + Math.PI/2) * spread;
-    S.tr.push({x1: barrelTipX, y1: barrelTipY, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
+    const spread = (Math.random() - 0.5) * 16;
+    const tx = e.x + Math.cos(angle + Math.PI/2) * spread;
+    const ty = e.y + Math.sin(angle + Math.PI/2) * spread;
+    S.tr.push({x1: barrelTipX, y1: barrelTipY, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
 
-    for(let k=0; k<3; k++) {
-     const spd = 60 + Math.random()*140;
-     const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
-     S.miniSparks.push({
-      x: tx, y: ty,
-      vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
-      t: 0.15 + Math.random()*0.1, maxT: 0.25
-     });
-    }
+    for(let k=0; k<3; k++) {
+     const spd = 60 + Math.random()*140;
+     const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
+     S.miniSparks.push({
+      x: tx, y: ty,
+      vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
+      t: 0.15 + Math.random()*0.1, maxT: 0.25
+     });
+    }
 
-    S.mImpacts.push({x: tx, y: ty, t: 0.12});
-    S.mcd+=1/16;
-   }
-  }
-  S.heat = Math.max(0, S.heat - dt * 0.35);
- } else {
-  S.heat = 0;
- }
+    S.mImpacts.push({x: tx, y: ty, t: 0.12});
+    S.mcd+=1/16;
+   }
+  }
+  S.heat = Math.max(0, S.heat - dt * 0.35);
+ } else {
+  S.heat = 0;
+ }
 
- for(const tw of S.towers) {
-  let best = null, bDist = TOWER_RANGE;
-  for(const e of S.en) {
-   if(e.h <= 0) continue;
-   const dist = Math.hypot(e.x - tw.x, e.y - tw.y);
-   if(dist <= TOWER_RANGE && dist < bDist) {
-    bDist = dist;
-    best = e;
-   }
-  }
-  tw.tgt = best;
-  if(best) {
-   const angle = Math.atan2(best.y - tw.y, best.x - tw.x);
-   tw.angle = angle;
+ for(const tw of S.towers) {
+  let best = null, bDist = TOWER_RANGE;
+  for(const e of S.en) {
+   if(e.h <= 0) continue;
+   const dist = Math.hypot(e.x - tw.x, e.y - tw.y);
+   if(dist <= TOWER_RANGE && dist < bDist) {
+    bDist = dist;
+    best = e;
+   }
+  }
+  tw.tgt = best;
+  if(best) {
+   const angle = Math.atan2(best.y - tw.y, best.x - tw.x);
+   tw.angle = angle;
 
-   if(tw.type === 'laser') {
-    hit(best, lDps(tw.level) * dt * (best.ar ? 0.75 : 1));
-   } else if(tw.type === 'minigun') {
-    tw.mcd = (tw.mcd || 0) - dt;
-    let n = 0;
-    while(tw.mcd <= 0 && n++ < 8) {
-     if(best.h <= 0) break;
-     hit(best, mDmg(tw.level) * (best.ar ? 1.5 : 1));
-     tw.recoil = 4;
-     tw.heat = Math.min(1, (tw.heat || 0) + 0.04);
-     
-     const mx = tw.x + Math.cos(angle) * 18;
-     const my = tw.y + Math.sin(angle) * 18;
+   if(tw.type === 'laser') {
+    hit(best, lDps(tw.level) * dt * (best.ar ? 0.75 : 1));
+   } else if(tw.type === 'minigun') {
+    tw.mcd = (tw.mcd || 0) - dt;
+    let n = 0;
+    while(tw.mcd <= 0 && n++ < 8) {
+     if(best.h <= 0) break;
+     hit(best, mDmg(tw.level) * (best.ar ? 1.5 : 1));
+     tw.recoil = 4;
+     tw.heat = Math.min(1, (tw.heat || 0) + 0.04);
+     
+     const mx = tw.x + Math.cos(angle) * 18;
+     const my = tw.y + Math.sin(angle) * 18;
 
-     S.mFlashes.push({x: mx, y: my, angle, t: 0.05, maxT: 0.05});
+     S.mFlashes.push({x: mx, y: my, angle, t: 0.05, maxT: 0.05});
 
-     const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
-     const brassSpd = 60 + Math.random() * 90;
-     S.shells.push({
-      x: tw.x, y: tw.y,
-      vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
-      rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
-      t: 0.35 + Math.random()*0.2, maxT: 0.55
-     });
+     const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
+     const brassSpd = 60 + Math.random() * 90;
+     S.shells.push({
+      x: tw.x, y: tw.y,
+      vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
+      rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
+      t: 0.35 + Math.random()*0.2, maxT: 0.55
+     });
 
-     if(Math.random() < 0.4) {
-      S.miniSmoke.push({
-       x: mx, y: my,
-       vx: Math.cos(angle)*20 + (Math.random()-0.5)*15,
-       vy: Math.sin(angle)*20 + (Math.random()-0.5)*15,
-       r: 2.5 + Math.random()*2.5,
-       t: 0.3, maxT: 0.3
-      });
-     }
+     if(Math.random() < 0.4) {
+      S.miniSmoke.push({
+       x: mx, y: my,
+       vx: Math.cos(angle)*20 + (Math.random()-0.5)*15,
+       vy: Math.sin(angle)*20 + (Math.random()-0.5)*15,
+       r: 2.5 + Math.random()*2.5,
+       t: 0.3, maxT: 0.3
+      });
+     }
 
-     const spread = (Math.random() - 0.5) * 14;
-     const tx = best.x + Math.cos(angle + Math.PI/2) * spread;
-     const ty = best.y + Math.sin(angle + Math.PI/2) * spread;
-     S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
+     const spread = (Math.random() - 0.5) * 14;
+     const tx = best.x + Math.cos(angle + Math.PI/2) * spread;
+     const ty = best.y + Math.sin(angle + Math.PI/2) * spread;
+     S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
 
-     for(let k=0; k<2; k++) {
-      const spd = 50 + Math.random()*120;
-      const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
-      S.miniSparks.push({
-       x: tx, y: ty,
-       vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
-       t: 0.12 + Math.random()*0.1, maxT: 0.22
-      });
-     }
+     for(let k=0; k<2; k++) {
+      const spd = 50 + Math.random()*120;
+      const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
+      S.miniSparks.push({
+       x: tx, y: ty,
+       vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
+       t: 0.12 + Math.random()*0.1, maxT: 0.22
+      });
+     }
 
-     S.mImpacts.push({x: tx, y: ty, t: 0.12});
-     tw.mcd += 1/16;
-    }
-    if(tw.mcd < 0) tw.mcd = 0;
-   }
-  } else {
-   tw.mcd = 0;
-  }
-  if(tw.type === 'minigun') {
-   tw.heat = Math.max(0, (tw.heat || 0) - dt * 0.35);
-  }
-  if(tw.recoil > 0) tw.recoil = Math.max(0, tw.recoil - dt * 25);
- }
+     S.mImpacts.push({x: tx, y: ty, t: 0.12});
+     tw.mcd += 1/16;
+    }
+    if(tw.mcd < 0) tw.mcd = 0;
+   }
+  } else {
+   tw.mcd = 0;
+  }
+  if(tw.type === 'minigun') {
+   tw.heat = Math.max(0, (tw.heat || 0) - dt * 0.35);
+  }
+  if(tw.recoil > 0) tw.recoil = Math.max(0, tw.recoil - dt * 25);
+ }
 
- if(S.bolt){
-  S.bcd-=dt;
-  if(S.bcd<=0){
-   if(S.en.length>0){
-    let target=null, maxHp=-1;
-    for(const e of S.en){if(e.h>maxHp){maxHp=e.h;target=e;}}
-    if(target){
-     hit(target, target.h*(2/3));
-     const mainPts = generateBoltPoints(target.x + (Math.random()-0.5)*40, -20, target.x, target.y, 10);
-     const branches = [];
-     for(let i=2; i<mainPts.length-2; i++){
-      if(Math.random() < 0.6) {
-       const p = mainPts[i];
-       const bAngle = (Math.random() - 0.5) * Math.PI;
-       const bLen = 30 + Math.random() * 40;
-       branches.push([p, {x: p.x + Math.sin(bAngle)*bLen, y: p.y + Math.cos(bAngle)*bLen}]);
-      }
-     }
+ if(S.bolt){
+  S.bcd-=dt;
+  if(S.bcd<=0){
+   if(S.en.length>0){
+    let target=null, maxHp=-1;
+    for(const e of S.en){if(e.h>maxHp){maxHp=e.h;target=e;}}
+    if(target){
+     hit(target, target.h*(2/3));
+     const mainPts = generateBoltPoints(target.x + (Math.random()-0.5)*40, -20, target.x, target.y, 10);
+     const branches = [];
+     for(let i=2; i<mainPts.length-2; i++){
+      if(Math.random() < 0.6) {
+       const p = mainPts[i];
+       const bAngle = (Math.random() - 0.5) * Math.PI;
+       const bLen = 30 + Math.random() * 40;
+       branches.push([p, {x: p.x + Math.sin(bAngle)*bLen, y: p.y + Math.cos(bAngle)*bLen}]);
+      }
+     }
 
-     S.lightnings.push({x:target.x, y:target.y, pts: mainPts, branches, t:.45, maxT:.45});
-     
-     for(let i=0; i<25; i++) {
-      const ang = Math.random() * TAU;
-      const spd = 120 + Math.random() * 260;
-      S.sparks.push({
-       x: target.x, y: target.y,
-       vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
-       t: 0.3 + Math.random() * 0.2, maxT: 0.5
-      });
-     }
+     S.lightnings.push({x:target.x, y:target.y, pts: mainPts, branches, t:.45, maxT:.45});
+     
+     for(let i=0; i<25; i++) {
+      const ang = Math.random() * TAU;
+      const spd = 120 + Math.random() * 260;
+      S.sparks.push({
+       x: target.x, y: target.y,
+       vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+       t: 0.3 + Math.random() * 0.2, maxT: 0.5
+      });
+     }
 
-     S.shake = 16;
-     S.flash = 0.35;
-     S.bcd=6.3;
-    }
-   }else{S.bcd=0;}
-  }
- }
+     S.shake = 16;
+     S.flash = 0.35;
+     S.bcd=6.3;
+    }
+   }else{S.bcd=0;}
+  }
+ }
 
- for(const l of S.lightnings)l.t-=dt;
- S.lightnings=S.lightnings.filter(l=>l.t>0);
+ for(const l of S.lightnings)l.t-=dt;
+ S.lightnings=S.lightnings.filter(l=>l.t>0);
 
- for(const s of S.sparks){s.x+=s.vx*dt;s.y+=s.vy*dt;s.vx*=0.92;s.vy*=0.92;s.t-=dt;}
- S.sparks=S.sparks.filter(s=>s.t>0);
+ for(const s of S.sparks){s.x+=s.vx*dt;s.y+=s.vy*dt;s.vx*=0.92;s.vy*=0.92;s.t-=dt;}
+ S.sparks=S.sparks.filter(s=>s.t>0);
 
- for(const sh of S.shells){
-  sh.x += sh.vx*dt; sh.y += sh.vy*dt;
-  sh.rot += sh.vRot*dt;
-  sh.vx *= 0.88; sh.vy *= 0.88;
-  sh.t -= dt;
- }
- S.shells=S.shells.filter(sh=>sh.t>0);
+ for(const sh of S.shells){
+  sh.x += sh.vx*dt; sh.y += sh.vy*dt;
+  sh.rot += sh.vRot*dt;
+  sh.vx *= 0.88; sh.vy *= 0.88;
+  sh.t -= dt;
+ }
+ S.shells=S.shells.filter(sh=>sh.t>0);
 
- for(const sm of S.miniSmoke){
-  sm.x += sm.vx*dt; sm.y += sm.vy*dt;
-  sm.r += dt*8; sm.t -= dt;
- }
- S.miniSmoke=S.miniSmoke.filter(sm=>sm.t>0);
+ for(const sm of S.miniSmoke){
+  sm.x += sm.vx*dt; sm.y += sm.vy*dt;
+  sm.r += dt*8; sm.t -= dt;
+ }
+ S.miniSmoke=S.miniSmoke.filter(sm=>sm.t>0);
 
- for(const ms of S.miniSparks){
-  ms.x += ms.vx*dt; ms.y += ms.vy*dt;
-  ms.vx *= 0.85; ms.vy *= 0.85;
-  ms.t -= dt;
- }
- S.miniSparks=S.miniSparks.filter(ms=>ms.t>0);
+ for(const ms of S.miniSparks){
+  ms.x += ms.vx*dt; ms.y += ms.vy*dt;
+  ms.vx *= 0.85; ms.vy *= 0.85;
+  ms.t -= dt;
+ }
+ S.miniSparks=S.miniSparks.filter(ms=>ms.t>0);
 
- S.en=S.en.filter(e=>e.h>0);
- for(const t of S.tr)t.t-=dt;S.tr=S.tr.filter(t=>t.t>0);
- for(const f of S.mFlashes)f.t-=dt;S.mFlashes=S.mFlashes.filter(f=>f.t>0);
- for(const i of S.mImpacts)i.t-=dt;S.mImpacts=S.mImpacts.filter(i=>i.t>0);
+ S.en=S.en.filter(e=>e.h>0);
+ for(const t of S.tr)t.t-=dt;S.tr=S.tr.filter(t=>t.t>0);
+ for(const f of S.mFlashes)f.t-=dt;S.mFlashes=S.mFlashes.filter(f=>f.t>0);
+ for(const i of S.mImpacts)i.t-=dt;S.mImpacts=S.mImpacts.filter(i=>i.t>0);
 
- if(S.hp<=0){S.hp=0;S.over=true;$('gt').textContent='You held out until wave '+S.wave+'.';$('go').hidden=false;return}
- if(!S.spawn&&!S.en.length){S.inter+=dt;if(S.inter>2.5)nextWave()}
+ if(S.hp<=0){S.hp=0;S.over=true;$('gt').textContent='You held out until wave '+S.wave+'.';$('go').hidden=false;return}
+ if(!S.spawn&&!S.en.length){S.inter+=dt;if(S.inter>2.5)nextWave()}
 }
 
 function line(x,y){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke()}
 
 function draw(){
- ctx.save();
- if(S.shake > 0) {
-  const rx = (Math.random() - 0.5) * S.shake;
-  const ry = (Math.random() - 0.5) * S.shake;
-  ctx.translate(rx, ry);
- }
+ ctx.save();
+ if(S.shake > 0) {
+  const rx = (Math.random() - 0.5) * S.shake;
+  const ry = (Math.random() - 0.5) * S.shake;
+  ctx.translate(rx, ry);
+ }
 
- ctx.fillStyle=theme.bg;ctx.fillRect(-20,-20,W+40,H+40);
- ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle=theme.range;ctx.fill();ctx.strokeStyle=theme.rline;ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
- ctx.lineCap='round';
+ ctx.fillStyle=theme.bg;ctx.fillRect(-20,-20,W+40,H+40);
+ ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle=theme.range;ctx.fill();ctx.strokeStyle=theme.rline;ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
+ ctx.lineCap='round';
 
- for(const tw of S.towers) {
-  ctx.beginPath();
-  ctx.arc(tw.x, tw.y, TOWER_RANGE, 0, TAU);
-  ctx.strokeStyle = tw === S.selectedTower ? 'rgba(251,191,36,0.35)' : 'rgba(96,165,250,0.12)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+ for(const tw of S.towers) {
+  ctx.beginPath();
+  ctx.arc(tw.x, tw.y, TOWER_RANGE, 0, TAU);
+  ctx.strokeStyle = tw === S.selectedTower ? 'rgba(251,191,36,0.35)' : 'rgba(96,165,250,0.12)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
 
-  if(tw.tgt && tw.type === 'laser') {
-   ctx.strokeStyle = 'rgba(239,68,68,0.25)'; ctx.lineWidth = 5;
-   ctx.beginPath(); ctx.moveTo(tw.x, tw.y); ctx.lineTo(tw.tgt.x, tw.tgt.y); ctx.stroke();
-   ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2;
-   ctx.beginPath(); ctx.moveTo(tw.x, tw.y); ctx.lineTo(tw.tgt.x, tw.tgt.y); ctx.stroke();
-  }
- }
+  if(tw.tgt && tw.type === 'laser') {
+   ctx.strokeStyle = 'rgba(239,68,68,0.25)'; ctx.lineWidth = 5;
+   ctx.beginPath(); ctx.moveTo(tw.x, tw.y); ctx.lineTo(tw.tgt.x, tw.tgt.y); ctx.stroke();
+   ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2;
+   ctx.beginPath(); ctx.moveTo(tw.x, tw.y); ctx.lineTo(tw.tgt.x, tw.tgt.y); ctx.stroke();
+  }
+ }
 
- if(S.placingTower) {
-  ctx.beginPath();
-  ctx.arc(S.mousePos.x, S.mousePos.y, TOWER_RANGE, 0, TAU);
-  ctx.fillStyle = 'rgba(59,130,246,0.1)';
-  ctx.fill();
-  ctx.strokeStyle = '#2563eb';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([4,4]);
-  ctx.stroke();
-  ctx.setLineDash([]);
+ if(S.placingTower) {
+  ctx.beginPath();
+  ctx.arc(S.mousePos.x, S.mousePos.y, TOWER_RANGE, 0, TAU);
+  ctx.fillStyle = 'rgba(59,130,246,0.1)';
+  ctx.fill();
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4,4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
 
-  ctx.beginPath();
-  ctx.arc(S.mousePos.x, S.mousePos.y, 12, 0, TAU);
-  ctx.fillStyle = 'rgba(37,99,235,0.7)';
-  ctx.fill();
- }
+  ctx.beginPath();
+  ctx.arc(S.mousePos.x, S.mousePos.y, 12, 0, TAU);
+  ctx.fillStyle = 'rgba(37,99,235,0.7)';
+  ctx.fill();
+ }
 
- for(const sh of S.shells) {
-  const a = Math.min(1, sh.t / (sh.maxT*0.5));
-  ctx.save();
-  ctx.translate(sh.x, sh.y);
-  ctx.rotate(sh.rot);
-  ctx.fillStyle = `rgba(245, 158, 11, ${a})`;
-  ctx.fillRect(-1.5, -3, 3, 6);
-  ctx.restore();
- }
+ for(const sh of S.shells) {
+  const a = Math.min(1, sh.t / (sh.maxT*0.5));
+  ctx.save();
+  ctx.translate(sh.x, sh.y);
+  ctx.rotate(sh.rot);
+  ctx.fillStyle = `rgba(245, 158, 11, ${a})`;
+  ctx.fillRect(-1.5, -3, 3, 6);
+  ctx.restore();
+ }
 
- for(const sm of S.miniSmoke) {
-  const a = sm.t / sm.maxT;
-  ctx.beginPath();
-  ctx.arc(sm.x, sm.y, sm.r, 0, TAU);
-  ctx.fillStyle = `rgba(148, 163, 184, ${a * 0.35})`;
-  ctx.fill();
- }
+ for(const sm of S.miniSmoke) {
+  const a = sm.t / sm.maxT;
+  ctx.beginPath();
+  ctx.arc(sm.x, sm.y, sm.r, 0, TAU);
+  ctx.fillStyle = `rgba(148, 163, 184, ${a * 0.35})`;
+  ctx.fill();
+ }
 
- for(const t of S.tr) {
-  const a = t.t / t.maxT;
-  ctx.beginPath();
-  ctx.moveTo(t.x1, t.y1);
-  ctx.lineTo(t.x2, t.y2);
-  ctx.strokeStyle = `rgba(251, 146, 60, ${a * 0.75})`;
-  ctx.lineWidth = 6;
-  ctx.stroke();
+ for(const t of S.tr) {
+  const a = t.t / t.maxT;
+  ctx.beginPath();
+  ctx.moveTo(t.x1, t.y1);
+  ctx.lineTo(t.x2, t.y2);
+  ctx.strokeStyle = `rgba(251, 146, 60, ${a * 0.75})`;
+  ctx.lineWidth = 6;
+  ctx.stroke();
 
-  ctx.beginPath();
-  ctx.moveTo(t.x1, t.y1);
-  ctx.lineTo(t.x2, t.y2);
-  ctx.strokeStyle = `rgba(254, 240, 138, ${a})`;
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
- }
+  ctx.beginPath();
+  ctx.moveTo(t.x1, t.y1);
+  ctx.lineTo(t.x2, t.y2);
+  ctx.strokeStyle = `rgba(254, 240, 138, ${a})`;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+ }
 
- for(const i of S.mImpacts) {
-  const a=Math.max(0,i.t/0.12),r=(1-a)*12+4;
-  ctx.beginPath();ctx.arc(i.x,i.y,r,0,TAU);
-  ctx.strokeStyle=`rgba(250,204,21,${a})`;ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=`rgba(251,146,60,${a*0.4})`;ctx.fill();
- }
+ for(const i of S.mImpacts) {
+  const a=Math.max(0,i.t/0.12),r=(1-a)*12+4;
+  ctx.beginPath();ctx.arc(i.x,i.y,r,0,TAU);
+  ctx.strokeStyle=`rgba(250,204,21,${a})`;ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=`rgba(251,146,60,${a*0.4})`;ctx.fill();
+ }
 
- for(const ms of S.miniSparks) {
-  const a = ms.t / ms.maxT;
-  ctx.beginPath();
-  ctx.arc(ms.x, ms.y, 1.5, 0, TAU);
-  ctx.fillStyle = `rgba(253, 224, 71, ${a})`;
-  ctx.fill();
- }
+ for(const ms of S.miniSparks) {
+  const a = ms.t / ms.maxT;
+  ctx.beginPath();
+  ctx.arc(ms.x, ms.y, 1.5, 0, TAU);
+  ctx.fillStyle = `rgba(253, 224, 71, ${a})`;
+  ctx.fill();
+ }
 
- if(S.tgt){
-  const flicker=Math.sin(performance.now()*0.05)*2+3;
-  ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;line(S.tgt.x,S.tgt.y);
-  ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y);
-  ctx.strokeStyle='#fef08a';ctx.lineWidth=1;line(S.tgt.x,S.tgt.y);
+ if(S.tgt){
+  const flicker=Math.sin(performance.now()*0.05)*2+3;
+  ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;line(S.tgt.x,S.tgt.y);
+  ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y);
+  ctx.strokeStyle='#fef08a';ctx.lineWidth=1;line(S.tgt.x,S.tgt.y);
 
-  for(let i=0; i<3; i++) {
-   const a=Math.random()*0.8+0.2,r=Math.random()*15+5;
-   ctx.beginPath();ctx.arc(S.tgt.x,S.tgt.y,r,0,TAU);
-   ctx.strokeStyle=`rgba(239,68,68,${a})`;ctx.lineWidth=1.5;ctx.stroke();
-  }
- }
+  for(let i=0; i<3; i++) {
+   const a=Math.random()*0.8+0.2,r=Math.random()*15+5;
+   ctx.beginPath();ctx.arc(S.tgt.x,S.tgt.y,r,0,TAU);
+   ctx.strokeStyle=`rgba(239,68,68,${a})`;ctx.lineWidth=1.5;ctx.stroke();
+  }
+ }
 
- for(const tw of S.towers) {
-  ctx.save();
-  ctx.translate(tw.x, tw.y);
+ for(const tw of S.towers) {
+  ctx.save();
+  ctx.translate(tw.x, tw.y);
 
-  if(tw === S.selectedTower) {
-   ctx.beginPath(); ctx.arc(0, 0, 16, 0, TAU);
-   ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke();
-  }
+  if(tw === S.selectedTower) {
+   ctx.beginPath(); ctx.arc(0, 0, 16, 0, TAU);
+   ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke();
+  }
 
-  ctx.beginPath(); ctx.arc(0, 0, 12, 0, TAU);
-  ctx.fillStyle = theme.panel; ctx.fill();
-  ctx.strokeStyle = theme.acc; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.arc(0, 0, 12, 0, TAU);
+  ctx.fillStyle = theme.panel; ctx.fill();
+  ctx.strokeStyle = theme.acc; ctx.lineWidth = 3; ctx.stroke();
 
-  ctx.save();
-  if(tw.angle !== undefined) ctx.rotate(tw.angle);
-  if(tw.recoil > 0) ctx.translate(-tw.recoil, 0);
+  ctx.save();
+  if(tw.angle !== undefined) ctx.rotate(tw.angle);
+  if(tw.recoil > 0) ctx.translate(-tw.recoil, 0);
 
-  if(tw.type === 'laser') {
-   ctx.fillStyle = '#ef4444';
-   ctx.fillRect(0, -2.5, 9, 5);
-   ctx.beginPath(); ctx.arc(0, 0, 5, 0, TAU);
-   ctx.fillStyle = '#ef4444'; ctx.fill();
-  } else {
-   const th = tw.heat || 0;
-   let r = Math.round(71 + th * 184);
-   let g = Math.round(85 - th * 20 + th * 155);
-   let b = Math.round(105 - th * 50);
-   const tHeatCol = `rgb(${r},${g},${b})`;
+  if(tw.type === 'laser') {
+   ctx.fillStyle = '#ef4444';
+   ctx.fillRect(0, -2.5, 9, 5);
+   ctx.beginPath(); ctx.arc(0, 0, 5, 0, TAU);
+   ctx.fillStyle = '#ef4444'; ctx.fill();
+  } else {
+   const th = tw.heat || 0;
+   let r = Math.round(71 + th * 184);
+   let g = Math.round(85 - th * 20 + th * 155);
+   let b = Math.round(105 - th * 50);
+   const tHeatCol = `rgb(${r},${g},${b})`;
 
-   if(th > 0.15) {
-    ctx.save();
-    ctx.shadowColor = `rgba(249, 115, 22, ${th})`;
-    ctx.shadowBlur = 8 * th;
-    ctx.fillStyle = tHeatCol;
-    ctx.fillRect(0, -5, 16, 3);
-    ctx.fillRect(0, 2, 16, 3);
-    ctx.restore();
-   }
+   if(th > 0.15) {
+    ctx.save();
+    ctx.shadowColor = `rgba(249, 115, 22, ${th})`;
+    ctx.shadowBlur = 8 * th;
+    ctx.fillStyle = tHeatCol;
+    ctx.fillRect(0, -5, 16, 3);
+    ctx.fillRect(0, 2, 16, 3);
+    ctx.restore();
+   }
 
-   ctx.fillStyle = '#1e293b';
-   ctx.fillRect(0, -5, 16, 3);
-   ctx.fillRect(0, 2, 16, 3);
+   ctx.fillStyle = '#1e293b';
+   ctx.fillRect(0, -5, 16, 3);
+   ctx.fillRect(0, 2, 16, 3);
 
-   ctx.fillStyle = tHeatCol;
-   ctx.fillRect(1, -4, 14, 1);
-   ctx.fillRect(1, 3, 14, 1);
+   ctx.fillStyle = tHeatCol;
+   ctx.fillRect(1, -4, 14, 1);
+   ctx.fillRect(1, 3, 14, 1);
 
-   ctx.fillStyle = th > 0.4 ? tHeatCol : '#f59e0b';
-   ctx.fillRect(16, -6, 3, 12);
+   ctx.fillStyle = th > 0.4 ? tHeatCol : '#f59e0b';
+   ctx.fillRect(16, -6, 3, 12);
 
-   ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
-   ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
-  }
-  ctx.restore();
+   ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
+   ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
+  }
+  ctx.restore();
 
-  ctx.fillStyle = theme.ink; ctx.font = 'bold 9px system-ui,sans-serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('L' + tw.level, 0, 20);
+  ctx.fillStyle = theme.ink; ctx.font = 'bold 9px system-ui,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('L' + tw.level, 0, 20);
 
-  ctx.restore();
- }
+  ctx.restore();
+ }
 
- ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 10px system-ui,sans-serif';
- for(const e of S.en){ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,TAU);ctx.fillStyle=e.fl>0?'#fff':col(e.L);ctx.fill();
-  if(e.ar){ctx.lineWidth=3;ctx.strokeStyle='#94a3b8';ctx.stroke()}
-  ctx.fillStyle='#0b1020';ctx.fillText(e.L,e.x,e.y+.5);
-  if(e.h<e.m){const w=e.r*2;ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(e.x-e.r,e.y-e.r-7,w,3);ctx.fillStyle='#22c55e';ctx.fillRect(e.x-e.r,e.y-e.r-7,w*e.h/e.m,3)}}
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 10px system-ui,sans-serif';
+ for(const e of S.en){ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,TAU);ctx.fillStyle=e.fl>0?'#fff':col(e.L);ctx.fill();
+  if(e.ar){ctx.lineWidth=3;ctx.strokeStyle='#94a3b8';ctx.stroke()}
+  ctx.fillStyle='#0b1020';ctx.fillText(e.L,e.x,e.y+.5);
+  if(e.h<e.m){const w=e.r*2;ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(e.x-e.r,e.y-e.r-7,w,3);ctx.fillStyle='#22c55e';ctx.fillRect(e.x-e.r,e.y-e.r-7,w*e.h/e.m,3)}}
 
- for(const l of S.lightnings){
-  const alpha = Math.max(0, l.t / l.maxT);
-  const prog = 1 - alpha;
-  ctx.save();
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+ for(const l of S.lightnings){
+  const alpha = Math.max(0, l.t / l.maxT);
+  const prog = 1 - alpha;
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
 
-  ctx.beginPath();
-  ctx.moveTo(l.pts[0].x, l.pts[0].y);
-  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
-  ctx.strokeStyle = `rgba(56,189,248,${alpha * 0.4})`;
-  ctx.lineWidth = 28;
-  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(56,189,248,${alpha * 0.4})`;
+  ctx.lineWidth = 28;
+  ctx.stroke();
 
-  ctx.beginPath();
-  ctx.moveTo(l.pts[0].x, l.pts[0].y);
-  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
-  ctx.strokeStyle = `rgba(14,165,233,${alpha})`;
-  ctx.lineWidth = 12;
-  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(14,165,233,${alpha})`;
+  ctx.lineWidth = 12;
+  ctx.stroke();
 
-  ctx.beginPath();
-  ctx.moveTo(l.pts[0].x, l.pts[0].y);
-  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
-  ctx.strokeStyle = `rgba(186,230,253,${alpha})`;
-  ctx.lineWidth = 6;
-  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(186,230,253,${alpha})`;
+  ctx.lineWidth = 6;
+  ctx.stroke();
 
-  ctx.beginPath();
-  ctx.moveTo(l.pts[0].x, l.pts[0].y);
-  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
-  ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-  ctx.lineWidth = 3;
-  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+  ctx.lineWidth = 3;
+  ctx.stroke();
 
-  for(const b of l.branches) {
-   ctx.beginPath();
-   ctx.moveTo(b[0].x, b[0].y);
-   ctx.lineTo(b[1].x, b[1].y);
-   ctx.strokeStyle = `rgba(56,189,248,${alpha * 0.8})`;
-   ctx.lineWidth = 3;
-   ctx.stroke();
-   ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-   ctx.lineWidth = 1;
-   ctx.stroke();
-  }
+  for(const b of l.branches) {
+   ctx.beginPath();
+   ctx.moveTo(b[0].x, b[0].y);
+   ctx.lineTo(b[1].x, b[1].y);
+   ctx.strokeStyle = `rgba(56,189,248,${alpha * 0.8})`;
+   ctx.lineWidth = 3;
+   ctx.stroke();
+   ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+   ctx.lineWidth = 1;
+   ctx.stroke();
+  }
 
-  const shockR = prog * 70 + 10;
-  ctx.beginPath();ctx.arc(l.x, l.y, shockR, 0, TAU);ctx.strokeStyle = `rgba(56,189,248,${alpha})`;ctx.lineWidth = 5;ctx.stroke();
-  ctx.beginPath();ctx.arc(l.x, l.y, shockR * 0.5, 0, TAU);ctx.fillStyle = `rgba(224,242,254,${alpha * 0.5})`;ctx.fill();
-  ctx.beginPath();ctx.arc(l.x, l.y, shockR * 1.2, 0, TAU);ctx.strokeStyle = `rgba(250,204,21,${alpha * 0.6})`;ctx.lineWidth = 2;ctx.stroke();
-  ctx.restore();
- }
+  const shockR = prog * 70 + 10;
+  ctx.beginPath();ctx.arc(l.x, l.y, shockR, 0, TAU);ctx.strokeStyle = `rgba(56,189,248,${alpha})`;ctx.lineWidth = 5;ctx.stroke();
+  ctx.beginPath();ctx.arc(l.x, l.y, shockR * 0.5, 0, TAU);ctx.fillStyle = `rgba(224,242,254,${alpha * 0.5})`;ctx.fill();
+  ctx.beginPath();ctx.arc(l.x, l.y, shockR * 1.2, 0, TAU);ctx.strokeStyle = `rgba(250,204,21,${alpha * 0.6})`;ctx.lineWidth = 2;ctx.stroke();
+  ctx.restore();
+ }
 
- for(const s of S.sparks) {
-  const a = s.t / s.maxT;
-  ctx.beginPath();ctx.arc(s.x, s.y, 2.5, 0, TAU);
-  ctx.fillStyle = `rgba(186,230,253,${a})`;ctx.fill();
- }
+ for(const s of S.sparks) {
+  const a = s.t / s.maxT;
+  ctx.beginPath();ctx.arc(s.x, s.y, 2.5, 0, TAU);
+  ctx.fillStyle = `rgba(186,230,253,${a})`;ctx.fill();
+ }
 
- for(const mf of S.mFlashes) {
-  const a = mf.t / mf.maxT;
-  ctx.save();
-  ctx.translate(mf.x, mf.y);
-  ctx.rotate(mf.angle);
-  
-  // Dynamic multi-pointed star burst
-  ctx.beginPath();
-  for(let k=0; k<8; k++) {
-   const ang = (k * Math.PI / 4);
-   const len = (k % 2 === 0 ? 22 : 9) * a;
-   const px = Math.cos(ang) * len;
-   const py = Math.sin(ang) * len;
-   if(k === 0) ctx.moveTo(px, py);
-   else ctx.lineTo(px, py);
-  }
-  ctx.closePath();
-  ctx.fillStyle = `rgba(251, 146, 60, ${a})`;
-  ctx.fill();
+ for(const mf of S.mFlashes) {
+  const a = mf.t / mf.maxT;
+  ctx.save();
+  ctx.translate(mf.x, mf.y);
+  ctx.rotate(mf.angle);
+  
+  // Dynamic multi-pointed star burst
+  ctx.beginPath();
+  for(let k=0; k<8; k++) {
+   const ang = (k * Math.PI / 4);
+   const len = (k % 2 === 0 ? 22 : 9) * a;
+   const px = Math.cos(ang) * len;
+   const py = Math.sin(ang) * len;
+   if(k === 0) ctx.moveTo(px, py);
+   else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fillStyle = `rgba(251, 146, 60, ${a})`;
+  ctx.fill();
 
-  // White-hot core flare
-  ctx.beginPath();
-  ctx.arc(0, 0, 7 * a, 0, TAU);
-  ctx.fillStyle = `rgba(254, 240, 138, ${a})`;
-  ctx.fill();
+  // White-hot core flare
+  ctx.beginPath();
+  ctx.arc(0, 0, 7 * a, 0, TAU);
+  ctx.fillStyle = `rgba(254, 240, 138, ${a})`;
+  ctx.fill();
 
-  ctx.beginPath();
-  ctx.arc(0, 0, 3.5 * a, 0, TAU);
-  ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
-  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(0, 0, 3.5 * a, 0, TAU);
+  ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
+  ctx.fill();
 
-  ctx.restore();
- }
+  ctx.restore();
+ }
 
- ctx.save();
- ctx.translate(cx, cy);
+ ctx.save();
+ ctx.translate(cx, cy);
 
- if(S.mini && S.miniAngle !== undefined) {
-  ctx.rotate(S.miniAngle);
- }
+ if(S.mini && S.miniAngle !== undefined) {
+  ctx.rotate(S.miniAngle);
+ }
 
- if(S.mini && S.recoil > 0) {
-  ctx.translate(-S.recoil, 0);
- }
+ if(S.mini && S.recoil > 0) {
+  ctx.translate(-S.recoil, 0);
+ }
 
- ctx.beginPath(); ctx.arc(0, 0, MR, 0, TAU);
- ctx.fillStyle = S.hit > 0 ? '#ef4444' : theme.core; ctx.fill();
- ctx.lineWidth = 3; ctx.strokeStyle = theme.bg; ctx.stroke();
+ ctx.beginPath(); ctx.arc(0, 0, MR, 0, TAU);
+ ctx.fillStyle = S.hit > 0 ? '#ef4444' : theme.core; ctx.fill();
+ ctx.lineWidth = 3; ctx.strokeStyle = theme.bg; ctx.stroke();
 
- if(S.mini) {
-  const spin = S.barrelSpin || 0;
-  const h = S.heat || 0;
+ if(S.mini) {
+  const spin = S.barrelSpin || 0;
+  const h = S.heat || 0;
 
-  let r, g, b;
-  if(h < 0.5) {
-   const t = h / 0.5;
-   r = Math.round(30 + t * (239 - 30));
-   g = Math.round(41 + t * (68 - 41));
-   b = Math.round(59 + t * (68 - 59));
-  } else {
-   const t = (h - 0.5) / 0.5;
-   r = Math.round(239 + t * (254 - 239));
-   g = Math.round(68 + t * (240 - 68));
-   b = Math.round(68 + t * (138 - 68));
-  }
-  const heatColor = `rgb(${r},${g},${b})`;
+  let r, g, b;
+  if(h < 0.5) {
+   const t = h / 0.5;
+   r = Math.round(30 + t * (239 - 30));
+   g = Math.round(41 + t * (68 - 41));
+   b = Math.round(59 + t * (68 - 59));
+  } else {
+   const t = (h - 0.5) / 0.5;
+   r = Math.round(239 + t * (254 - 239));
+   g = Math.round(68 + t * (240 - 68));
+   b = Math.round(68 + t * (138 - 68));
+  }
+  const heatColor = `rgb(${r},${g},${b})`;
 
-  // Ammo Chute / Belt on side
-  ctx.fillStyle = '#b45309';
-  for(let i = -6; i <= 2; i += 4) {
-   ctx.fillRect(-2 + i, 7, 2.5, 5);
-   ctx.fillStyle = '#f59e0b';
-   ctx.fillRect(-1.5 + i, 8.5, 1.5, 3);
-   ctx.fillStyle = '#b45309';
-  }
+  // Ammo Chute / Belt on side
+  ctx.fillStyle = '#b45309';
+  for(let i = -6; i <= 2; i += 4) {
+   ctx.fillRect(-2 + i, 7, 2.5, 5);
+   ctx.fillStyle = '#f59e0b';
+   ctx.fillRect(-1.5 + i, 8.5, 1.5, 3);
+   ctx.fillStyle = '#b45309';
+  }
 
-  // Gun Casing / Recoil Shroud
-  ctx.fillStyle = '#0f172a';
-  ctx.fillRect(-4, -10, 16, 20);
+  // Gun Casing / Recoil Shroud
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(-4, -10, 16, 20);
 
-  // Slotted Heat Vents on Shroud
-  if(h > 0.05) {
-   ctx.save();
-   ctx.shadowColor = heatColor;
-   ctx.shadowBlur = 10 * h;
-   ctx.fillStyle = heatColor;
-   ctx.fillRect(-1, -8, 8, 2);
-   ctx.fillRect(-1, -4, 8, 2);
-   ctx.fillRect(-1, 4, 8, 2);
-   ctx.fillRect(-1, 8, 8, 2);
-   ctx.restore();
-  } else {
-   ctx.fillStyle = '#334155';
-   ctx.fillRect(-1, -8, 8, 2);
-   ctx.fillRect(-1, -4, 8, 2);
-   ctx.fillRect(-1, 4, 8, 2);
-   ctx.fillRect(-1, 8, 8, 2);
-  }
+  // Slotted Heat Vents on Shroud
+  if(h > 0.05) {
+   ctx.save();
+   ctx.shadowColor = heatColor;
+   ctx.shadowBlur = 10 * h;
+   ctx.fillStyle = heatColor;
+   ctx.fillRect(-1, -8, 8, 2);
+   ctx.fillRect(-1, -4, 8, 2);
+   ctx.fillRect(-1, 4, 8, 2);
+   ctx.fillRect(-1, 8, 8, 2);
+   ctx.restore();
+  } else {
+   ctx.fillStyle = '#334155';
+   ctx.fillRect(-1, -8, 8, 2);
+   ctx.fillRect(-1, -4, 8, 2);
+   ctx.fillRect(-1, 4, 8, 2);
+   ctx.fillRect(-1, 8, 8, 2);
+  }
 
-  // 6 3D Rotating Gatling Barrels
-  const numBarrels = 6;
-  const barrelRadius = 5.5;
-  let barrelList = [];
-  for(let i = 0; i < numBarrels; i++) {
-   const bAngle = spin + (i * TAU / numBarrels);
-   barrelList.push({
-    y: Math.sin(bAngle) * barrelRadius,
-    z: Math.cos(bAngle)
-   });
-  }
-  barrelList.sort((a,b) => a.z - b.z); // Render back barrels first for depth
+  // 6 3D Rotating Gatling Barrels
+  const numBarrels = 6;
+  const barrelRadius = 5.5;
+  let barrelList = [];
+  for(let i = 0; i < numBarrels; i++) {
+   const bAngle = spin + (i * TAU / numBarrels);
+   barrelList.push({
+    y: Math.sin(bAngle) * barrelRadius,
+    z: Math.cos(bAngle)
+   });
+  }
+  barrelList.sort((a,b) => a.z - b.z); // Render back barrels first for depth
 
-  for(const bar of barrelList) {
-   const pScale = 0.75 + (bar.z + 1) * 0.25;
-   const shade = Math.floor(25 + (bar.z + 1) * 35);
-   ctx.fillStyle = `rgb(${shade},${shade+10},${shade+25})`;
-   ctx.fillRect(8, bar.y - (1.6 * pScale), 26, 3.2 * pScale);
+  for(const bar of barrelList) {
+   const pScale = 0.75 + (bar.z + 1) * 0.25;
+   const shade = Math.floor(25 + (bar.z + 1) * 35);
+   ctx.fillStyle = `rgb(${shade},${shade+10},${shade+25})`;
+   ctx.fillRect(8, bar.y - (1.6 * pScale), 26, 3.2 * pScale);
 
-   if(h > 0.1) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, (bar.z + 0.5) / 1.5) * h;
-    ctx.fillStyle = heatColor;
-    ctx.fillRect(10, bar.y - (0.8 * pScale), 22, 1.6 * pScale);
-    ctx.restore();
-   }
-  }
+   if(h > 0.1) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, (bar.z + 0.5) / 1.5) * h;
+    ctx.fillStyle = heatColor;
+    ctx.fillRect(10, bar.y - (0.8 * pScale), 22, 1.6 * pScale);
+    ctx.restore();
+   }
+  }
 
-  // Front Barrel Retaining Rings & Clamps
-  const clampH = h > 0.4 ? heatColor : '#64748b';
-  ctx.fillStyle = clampH;
-  ctx.fillRect(20, -7, 3, 14);
-  ctx.fillRect(31, -7, 3, 14);
+  // Front Barrel Retaining Rings & Clamps
+  const clampH = h > 0.4 ? heatColor : '#64748b';
+  ctx.fillStyle = clampH;
+  ctx.fillRect(20, -7, 3, 14);
+  ctx.fillRect(31, -7, 3, 14);
 
-  // Center Shaft Hub Cap
-  ctx.beginPath(); ctx.arc(8, 0, 4, 0, TAU); ctx.fillStyle = '#475569'; ctx.fill();
-  ctx.beginPath(); ctx.arc(8, 0, 2, 0, TAU); ctx.fillStyle = '#0f172a'; ctx.fill();
- }
+  // Center Shaft Hub Cap
+  ctx.beginPath(); ctx.arc(8, 0, 4, 0, TAU); ctx.fillStyle = '#475569'; ctx.fill();
+  ctx.beginPath(); ctx.arc(8, 0, 2, 0, TAU); ctx.fillStyle = '#0f172a'; ctx.fill();
+ }
 
- ctx.restore();
+ ctx.restore();
 
- if(S.ban>0){ctx.globalAlpha=Math.min(1,S.ban);ctx.fillStyle=theme.ink;ctx.font='bold 26px system-ui,sans-serif';ctx.fillText(S.bt,cx,cy+R+36);ctx.globalAlpha=1}
+ if(S.ban>0){ctx.globalAlpha=Math.min(1,S.ban);ctx.fillStyle=theme.ink;ctx.font='bold 26px system-ui,sans-serif';ctx.fillText(S.bt,cx,cy+R+36);ctx.globalAlpha=1}
 
- if(S.flash > 0) {
-  ctx.fillStyle = `rgba(186, 230, 253, ${S.flash})`;
-  ctx.fillRect(-20, -20, W+40, H+40);
- }
+ if(S.flash > 0) {
+  ctx.fillStyle = `rgba(186, 230, 253, ${S.flash})`;
+  ctx.fillRect(-20, -20, W+40, H+40);
+ }
 
- ctx.restore();
+ ctx.restore();
 }
 
 function hud(){$('wv').textContent='Wave '+S.wave+' (enemies up to Lv '+topLv()+')';$('lf').textContent=(S.spawn+S.en.length)+' enemies left';$('hpt').textContent='HP '+Math.ceil(S.hp)+' / '+hpMax();$('hpb').style.width=S.hp/hpMax()*100+'\%';$('tk').textContent=S.infTok?'∞':S.tok;$('tb').firstElementChild.style.width=S.infTok?'100\%':Math.min(100,S.acc/thr()*100)+'\%';$('ub').textContent='Upgrades'+(S.tok?' ('+(S.infTok?'∞':S.tok)+')':'')}
 
 function panel(){
- const L=S.laser;
- const tCount = S.towers.length;
- const extraTowerRow = tCount >= MAX_TOWERS 
-  ? ['Extra Towers', `Placed: ${tCount}/${MAX_TOWERS}. Manage & upgrade all extra towers globally.`, 0, 'Upgrade', 'tu']
-  : ['Extra Tower', `Placed: ${tCount}/${MAX_TOWERS}. Auto-shoots at nearby enemies.`, 20, 'Buy', 't'];
+ const L=S.laser;
+ const tCount = S.towers.length;
+ const extraTowerRow = tCount >= MAX_TOWERS 
+  ? ['Extra Towers', `Placed: ${tCount}/${MAX_TOWERS}. Manage & upgrade all extra towers globally.`, 0, 'Upgrade', 'tu']
+  : ['Extra Tower', `Placed: ${tCount}/${MAX_TOWERS}. Auto-shoots at nearby enemies.`, 20, 'Buy', 't'];
 
- const rows=[
-  ['Laser','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
-  S.mini?['Minigun','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 16/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun','Very fast fire, low damage per shot. Starts at Lv 1.',3,'Buy','m'],
-  S.bolt?['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',0,'Owned','b']:['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',20,'Buy','b'],
-  extraTowerRow,
-  ['Health','Lv '+S.hpLv+': max HP '+hpMax()+', next '+(hpMax()+25),2,'Upgrade','h']
- ];
- $('rows').innerHTML=rows.map(r=>`<div class="row"><div><b>${r[0]}</b><small>${r[1]}</small></div><button data-k="${r[4]}" data-c="${r[2]}" ${(S.tok<r[2]&&!S.infTok)||(r[4]=='b'&&S.bolt)||(r[4]=='t'&&tCount>=MAX_TOWERS)?'disabled':''}>${r[3]} (${r[2]})</button></div>`).join('');$('tk2').textContent=S.infTok?'∞':S.tok;
+ const rows=[
+  ['Laser','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
+  S.mini?['Minigun','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 16/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun','Very fast fire, low damage per shot. Starts at Lv 1.',3,'Buy','m'],
+  S.bolt?['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',0,'Owned','b']:['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',20,'Buy','b'],
+  extraTowerRow,
+  ['Health','Lv '+S.hpLv+': max HP '+hpMax()+', next '+(hpMax()+25),2,'Upgrade','h']
+ ];
+ $('rows').innerHTML=rows.map(r=>`<div class="row"><div><b>${r[0]}</b><small>${r[1]}</small></div><button data-k="${r[4]}" data-c="${r[2]}" ${(S.tok<r[2]&&!S.infTok)||(r[4]=='b'&&S.bolt)||(r[4]=='t'&&tCount>=MAX_TOWERS)?'disabled':''}>${r[3]} (${r[2]})</button></div>`).join('');$('tk2').textContent=S.infTok?'∞':S.tok;
 }
 
 function openTowerPanel(){
- renderTowerPanel();
- $('tp').hidden = false;
+ renderTowerPanel();
+ $('tp').hidden = false;
 }
 
 function renderTowerPanel(){
- $('tk3').textContent = S.infTok ? '∞' : S.tok;
- let html = '';
- const isLaser = S.extraType === 'laser';
- if(isLaser) {
-  html += `
-  <div class="row">
-   <div><b>Upgrade All Lasers (Lv ${S.extraLaserLv})</b><small>Dmg: ${lDps(S.extraLaserLv)} → ${lDps(S.extraLaserLv+1)}/s</small></div>
-   <button id="btnUpLaser" ${S.tok<1&&!S.infTok?'disabled':''}>Upgrade (1)</button>
-  </div>
-  <div class="row">
-   <div><b>Convert All to Minigun</b><small>High rate-of-fire kinetic weapon for all extra towers</small></div>
-   <button id="btnConvMini" ${S.tok<3&&!S.infTok?'disabled':''}>Convert (3)</button>
-  </div>`;
- } else {
-  html += `
-  <div class="row">
-   <div><b>Upgrade All Miniguns (Lv ${S.extraMiniLv})</b><small>Dmg: ${mDmg(S.extraMiniLv).toFixed(1)} → ${mDmg(S.extraMiniLv+1).toFixed(1)} x 16/s</small></div>
-   <button id="btnUpMini" ${S.tok<1&&!S.infTok?'disabled':''}>Upgrade (1)</button>
-  </div>`;
- }
- $('tRows').innerHTML = html;
+ $('tk3').textContent = S.infTok ? '∞' : S.tok;
+ let html = '';
+ const isLaser = S.extraType === 'laser';
+ if(isLaser) {
+  html += `
+  <div class="row">
+   <div><b>Upgrade All Lasers (Lv ${S.extraLaserLv})</b><small>Dmg: ${lDps(S.extraLaserLv)} → ${lDps(S.extraLaserLv+1)}/s</small></div>
+   <button id="btnUpLaser" ${S.tok<1&&!S.infTok?'disabled':''}>Upgrade (1)</button>
+  </div>
+  <div class="row">
+   <div><b>Convert All to Minigun</b><small>High rate-of-fire kinetic weapon for all extra towers</small></div>
+   <button id="btnConvMini" ${S.tok<3&&!S.infTok?'disabled':''}>Convert (3)</button>
+  </div>`;
+ } else {
+  html += `
+  <div class="row">
+   <div><b>Upgrade All Miniguns (Lv ${S.extraMiniLv})</b><small>Dmg: ${mDmg(S.extraMiniLv).toFixed(1)} → ${mDmg(S.extraMiniLv+1).toFixed(1)} x 16/s</small></div>
+   <button id="btnUpMini" ${S.tok<1&&!S.infTok?'disabled':''}>Upgrade (1)</button>
+  </div>`;
+ }
+ $('tRows').innerHTML = html;
 }
 
 $('tRows').onclick = e => {
- const b = e.target.closest('button');
- if(!b) return;
- if(b.id === 'btnUpLaser') {
-  if(S.tok<1 && !S.infTok) return;
-  if(!S.infTok) S.tok -= 1;
-  S.extraLaserLv++;
-  for(const tw of S.towers) {
-   if(tw.type === 'laser') tw.level = S.extraLaserLv;
-  }
- } else if(b.id === 'btnConvMini') {
-  if(S.tok<3 && !S.infTok) return;
-  if(!S.infTok) S.tok -= 3;
-  S.extraType = 'minigun';
-  for(const tw of S.towers) {
-   tw.type = 'minigun';
-   tw.level = S.extraMiniLv;
-   tw.mcd = 0;
-   tw.heat = 0;
-  }
- } else if(b.id === 'btnUpMini') {
-  if(S.tok<1 && !S.infTok) return;
-  if(!S.infTok) S.tok -= 1;
-  S.extraMiniLv++;
-  for(const tw of S.towers) {
-   if(tw.type === 'minigun') tw.level = S.extraMiniLv;
-  }
- }
- renderTowerPanel();
- hud();
+ const b = e.target.closest('button');
+ if(!b) return;
+ if(b.id === 'btnUpLaser') {
+  if(S.tok<1 && !S.infTok) return;
+  if(!S.infTok) S.tok -= 1;
+  S.extraLaserLv++;
+  for(const tw of S.towers) {
+   if(tw.type === 'laser') tw.level = S.extraLaserLv;
+  }
+ } else if(b.id === 'btnConvMini') {
+  if(S.tok<3 && !S.infTok) return;
+  if(!S.infTok) S.tok -= 3;
+  S.extraType = 'minigun';
+  for(const tw of S.towers) {
+   tw.type = 'minigun';
+   tw.level = S.extraMiniLv;
+   tw.mcd = 0;
+   tw.heat = 0;
+  }
+ } else if(b.id === 'btnUpMini') {
+  if(S.tok<1 && !S.infTok) return;
+  if(!S.infTok) S.tok -= 1;
+  S.extraMiniLv++;
+  for(const tw of S.towers) {
+   if(tw.type === 'minigun') tw.level = S.extraMiniLv;
+  }
+ }
+ renderTowerPanel();
+ hud();
 };
 
 $('rows').onclick=e=>{
- const b=e.target.closest('button');if(!b)return;
- const c=+b.dataset.c,k=b.dataset.k;
- if(S.tok<c && !S.infTok)return;
- if(k=='b'&&S.bolt)return;
- if(k=='t'&&S.towers.length>=MAX_TOWERS)return;
- 
- if(k==='tu'){
-  $('up').hidden=true;
-  openTowerPanel();
-  return;
- }
-
- if(!S.infTok)S.tok-=c;
- if(k=='l')S.laser++;
- else if(k=='m')S.mini++;
- else if(k=='b'){S.bolt=1;S.bcd=0;}
- else if(k=='t'){
-  S.placingTower=true;
-  $('up').hidden=true;
-  $('placeBanner').hidden=false;
- }
- else{S.hpLv++;S.hp+=25}
- panel();
-};
-
-cv.onpointermove = e => {
- const rect = cv.getBoundingClientRect();
- S.mousePos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
-};
-
-cv.onclick = e => {
- const rect = cv.getBoundingClientRect();
- const x = e.clientX - rect.left;
- const y = e.clientY - rect.top;
-
- if(S.placingTower) {
-  const currentLv = S.extraType === 'laser' ? S.extraLaserLv : S.extraMiniLv;
-  S.towers.push({ x, y, type: S.extraType, level: currentLv, mcd: 0, recoil: 0, angle: 0, tgt: null, heat: 0 });
-  S.placingTower = false;
-  $('placeBanner').hidden = true;
-  return;
- }
-
- const clicked = S.towers.find(tw => Math.hypot(tw.x - x, tw.y - y) <= 18);
- if(clicked) {
-  S.selectedTower = clicked;
-  openTowerPanel();
- } else {
-  S.selectedTower = null;
- }
-};
-
-$('ub').onclick=()=>{panel();$('up').hidden=false};$('cl').onclick=()=>{$('up').hidden=true};$('tpClose').onclick=()=>{$('tp').hidden=true};$('rs').onclick=init;
-
-$('sb').onclick=()=>{
- S.speed=S.speed===1?2:1;
- if(S.speed===2){
-  $('sb').textContent='2x Active (1x)';$('sb').classList.add('active-speed');
- }else{
-  $('sb').textContent='2x Speed';$('sb').classList.remove('active-speed');
- }
-};
-
-$('db').onclick=()=>{
- if(!S.devAuth){
-  $('dtPassArea').hidden=false;
-  $('dtContent').hidden=true;
-  $('dtPass').value='';$('dtErr').textContent='';
- }else{
-  $('dtPassArea').hidden=true;
-  $('dtContent').hidden=false;
-  updateDevUi();
- }
- $('dt').hidden=false;
-};
-
-function checkPass(){
- if($('dtPass').value==='2408'){
-  S.devAuth=true;
-  $('dtPassArea').hidden=true;
-  $('dtContent').hidden=false;
-  updateDevUi();
- }else{
-  $('dtErr').textContent='Incorrect password.';
- }
-}
-
-$('dtSub').onclick=checkPass;
-$('dtPass').onkeydown=e=>{if(e.key==='Enter')checkPass();};
-$('dtCancel').onclick=()=>{$('dt').hidden=true;};
-$('dtClose').onclick=()=>{$('dt').hidden=true;};
-
-function updateDevUi(){
- $('dtTokBtn').textContent=S.infTok?'Disable':'Enable';
-}
-
-$('dtTokBtn').onclick=()=>{
- S.infTok=!S.infTok;
- if(S.infTok)S.tok=999999;
- updateDevUi();
- hud();
-};
-
-$('dtAddTok').onclick=()=>{
- S.tok+=10000;
- hud();
-};
-
-$('dtSpawn5L1').onclick=()=>{
- for(let i=0;i<5;i++) spawn(1);
- hud();
-};
-
-function loop(t){
- const dt=Math.min(.05,(t-last)/1000||0)*S.speed;
- last=t;
- if(!S.over&&$('up').hidden&&$('dt').hidden&&$('tp').hidden&&$('pn').hidden) update(dt);
- if(++fc%60==0)readTheme();
- hud();draw();requestAnimationFrame(loop);
-}
-
-addEventListener('resize',resize);
-matchMedia('(prefers-color-scheme:dark)').addEventListener('change',readTheme);
-resize();init();checkPatchNotes();requestAnimationFrame(loop);
-</script>
-</body>
-</html>
+ const b=e.target.closest('button');if(!b)return;
+ const c=+b.dataset.c,k=b.dataset.k;
+ if(S.tok<c && !S.infTok)return;
+ if(k=='b'&&S.bolt)return;
+ if(k=='t'&&S.towers.length>=MAX_TOWERS)return;
+ 
+ if(k==='tu'){
+  $('up').hidden=
