@@ -56,10 +56,10 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Extra Tower Limit:</b> Reduced maximum extra towers from 4 to 2.</li>
-   <li><b>Integrated Tower Upgrades:</b> The buy option in the Upgrades menu transforms into an Extra Towers Upgrade button when max towers are placed.</li>
-   <li><b>Global Tower Upgrades:</b> Upgrades purchased for extra towers now apply globally to all placed extra towers at once.</li>
-   <li><b>Dev Tools Spawn:</b> Includes dev tool cheat to spawn Level 1 enemies in groups of 5.</li>
+   <li><b>Map Expanded:</b> Outer perimeter and play radius increased to offer more building space.</li>
+   <li><b>Extra Tower Limit:</b> Maximum extra towers capped at 2.</li>
+   <li><b>Integrated Tower Upgrades:</b> The buy option transforms into an Extra Towers Upgrade button when max towers are placed.</li>
+   <li><b>Global Tower Upgrades:</b> Extra tower upgrades apply globally to all placed extra towers at once.</li>
   </ul>
  </div>
  <button id="pnClose" style="width:100%;">Got it!</button>
@@ -108,17 +108,25 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.4.0';
+const GAME_VERSION = 'v1.5.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
-const MR=14,TAU=6.2832,TOWER_RANGE=180,MAX_TOWERS=2;
+const MR=14,TAU=6.2832,TOWER_RANGE=200,MAX_TOWERS=2;
 let W,H,cx,cy,R,SR,S,last=0,fc=0,theme={};
 const lDps=l=>24+9*(l-1),mDmg=l=>1.3+.55*(l-1),hpMax=()=>100+25*S.hpLv;
 const topLv=()=>1+Math.floor((S.wave-1)/10);
 const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
 function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
-function resize(){const d=Math.min(devicePixelRatio||1,2),a=$('app');W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);cx=W/2;cy=H/2+20;R=Math.max(100,Math.min(210,Math.min(W,H)*.3));SR=Math.hypot(W,H)/2+30;readTheme()}
+function resize(){
+ const d=Math.min(devicePixelRatio||1,2),a=$('app');
+ W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
+ ctx.setTransform(d,0,0,d,0,0);
+ cx=W/2;cy=H/2+15;
+ R=Math.max(130,Math.min(270,Math.min(W,H)*.36));
+ SR=Math.hypot(W,H)/2+60;
+ readTheme();
+}
 
 function checkPatchNotes(){
  const savedVer = localStorage.getItem('last_stand_version');
@@ -179,7 +187,6 @@ function update(dt){
  S.tgt=near;
  if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
  
- // Base Minigun Target, Firing & Heat Logic
  if(S.mini){
   const arm = inr.filter(e=>e.ar&&e.h>0);
   const pool = arm.length ? arm : inr.filter(e=>e.h>0);
@@ -251,7 +258,6 @@ function update(dt){
   S.heat = 0;
  }
 
- // Placed Extra Towers Behavior
  for(const tw of S.towers) {
   let best = null, bDist = TOWER_RANGE;
   for(const e of S.en) {
@@ -331,7 +337,6 @@ function update(dt){
   if(tw.recoil > 0) tw.recoil = Math.max(0, tw.recoil - dt * 25);
  }
 
- // Lightning Bolt
  if(S.bolt){
   S.bcd-=dt;
   if(S.bcd<=0){
