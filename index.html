@@ -2,128 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tower Defense Game</title>
+<title>Tower Defense</title>
 <style>
   body {
+    background: #222;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
     margin: 0;
-    padding: 20px;
-    background-color: #1e1e24;
-    color: #f0f0f0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
+    padding: 15px;
   }
-  #game-container {
-    display: flex;
-    gap: 20px;
-  }
-  canvas {
-    background: #3a5a40;
-    border: 4px solid #14213d;
-    border-radius: 8px;
-    cursor: crosshair;
-  }
-  #sidebar {
-    width: 310px;
-    background: #2b2d42;
+  #game-wrapper {
+    display: inline-block;
+    background: #333;
     padding: 15px;
     border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
   }
-  .hud-box {
-    background: #8d99ae;
-    color: #111;
-    padding: 10px;
-    border-radius: 6px;
+  canvas {
+    background: #4a7c59;
+    border: 3px solid #111;
+    display: block;
+    margin: 0 auto 10px auto;
+  }
+  .hud {
+    font-size: 18px;
+    margin-bottom: 10px;
     font-weight: bold;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
   }
-  .menu-card {
-    background: #1d3557;
-    border-radius: 6px;
-    padding: 10px;
-    border: 1px solid #457b9d;
+  .panel-section {
+    background: #444;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: left;
   }
-  .menu-card h3 {
-    margin: 0 0 8px 0;
-    color: #fca311;
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .panel-section h4 {
+    margin: 0 0 5px 0;
+    color: #ffd700;
   }
   button {
-    width: 100%;
-    padding: 8px 10px;
-    margin: 4px 0;
-    background: #e63946;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    background: #555;
+    color: #fff;
+    border: 1px solid #777;
+    padding: 6px 10px;
+    margin: 3px;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 12px;
-    transition: background 0.2s;
+    border-radius: 4px;
+    font-size: 13px;
   }
   button:hover:not(:disabled) {
-    background: #d62828;
+    background: #777;
   }
   button:disabled {
-    background: #555;
+    opacity: 0.4;
     cursor: not-allowed;
-    opacity: 0.6;
   }
-  .btn-buy {
-    background: #2a9d8f;
-  }
-  .btn-buy:hover:not(:disabled) {
-    background: #218380;
-  }
-  .btn-active {
-    outline: 2px solid #fca311;
+  .active-btn {
+    border-color: #ffd700;
+    background: #665500;
   }
 </style>
 </head>
 <body>
 
-<div id="game-container">
-  <canvas id="gameCanvas" width="600" height="500"></canvas>
-  
-  <div id="sidebar">
-    <div class="hud-box">
-      <span>Tokens: <span id="token-count">60</span></span>
-      <span>Towers: <span id="tower-count">1</span>/2</span>
+<div id="game-wrapper">
+  <div class="hud">
+    Tokens: <span id="tokens-val">60</span> | Towers: <span id="towers-val">1</span>/2
+  </div>
+
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+  <!-- INTEGRATED BUY & UPGRADE MENU -->
+  <div class="panel-section">
+    <h4>Build Menu</h4>
+    <button id="btn-mode-outpost" onclick="setBuildMode('outpost')">Build Outpost Tower (20 tokens)</button>
+    <button id="btn-mode-spikes" onclick="setBuildMode('spikes')">Buy Spike Trap (15 tokens) [<span id="spike-count">0</span>/4]</button>
+  </div>
+
+  <div class="panel-section">
+    <h4>Upgrades Menu</h4>
+    <button onclick="upgradeCastle()">Castle +Dmg (10 tokens)</button>
+    <button id="btn-upg-outpost" onclick="toggleOutpostUpgradeMenu()">Outpost Upgrades</button>
+    <button id="btn-upg-spikes" onclick="toggleSpikeUpgradeMenu()">Spike Trap Upgrades</button>
+
+    <!-- Sub-menu for Outpost Tower -->
+    <div id="sub-outpost" style="display:none; margin-top:8px; padding-top:5px; border-top:1px solid #666;">
+      <strong>Outpost Upgrades:</strong>
+      <button id="btn-outpost-dmg" onclick="upgradeOutpost()">+Damage (10 tokens)</button>
     </div>
 
-    <!-- BUILD MENU -->
-    <div class="menu-card">
-      <h3>Build Options</h3>
-      <button id="btn-build-outpost" class="btn-buy" onclick="setBuildMode('outpost')">Build Outpost Tower (20 Tokens)</button>
-      <button id="btn-build-spikes" class="btn-buy" onclick="setBuildMode('spikes')">Buy Spike Trap (15 Tokens) [<span id="spike-count">0</span>/4]</button>
-    </div>
-
-    <!-- MAIN CASTLE MENU -->
-    <div class="menu-card">
-      <h3>Main Castle</h3>
-      <button onclick="upgradeCastleDamage()">+Damage (10 Tokens)</button>
-    </div>
-
-    <!-- EXTRA TOWER MENU -->
-    <div class="menu-card">
-      <h3>Outpost Tower</h3>
-      <button id="btn-upg-outpost-dmg" onclick="upgradeOutpostDamage()" disabled>+Damage (10 Tokens)</button>
-    </div>
-
-    <!-- SPIKE TRAPS MENU -->
-    <div class="menu-card">
-      <h3>Spike Traps</h3>
-      <button id="btn-spk-unlock-dmg" onclick="unlockSpikeDamage()">Unlock Tick Damage (10 Tokens)</button>
-      <button id="btn-spk-upg-dmg" onclick="upgradeSpikeDamage()" disabled>+Tick Damage (5 Tokens) [Level <span id="spk-dmg-lvl">0</span>]</button>
-      <button id="btn-spk-upg-slow" onclick="upgradeSpikeSlow()">+Extra Slowdown (10 Tokens)</button>
+    <!-- Sub-menu for Spike Traps -->
+    <div id="sub-spikes" style="display:none; margin-top:8px; padding-top:5px; border-top:1px solid #666;">
+      <strong>Spike Trap Upgrades:</strong>
+      <button id="btn-spk-unlock" onclick="unlockSpikeDamage()">Unlock Tick Damage (10 tokens)</button>
+      <button id="btn-spk-dmg" onclick="upgradeSpikeDamage()" disabled>+Tick Dmg (5 tokens) [Lvl <span id="spk-lvl">0</span>/5]</button>
+      <button id="btn-spk-slow" onclick="upgradeSpikeSlow()">Extra Slowdown (10 tokens)</button>
     </div>
   </div>
 </div>
@@ -135,57 +108,53 @@ const ctx = canvas.getContext('2d');
 let tokens = 60;
 let buildMode = null; // 'outpost' or 'spikes'
 
-// --- TOWER LIMIT & RANGE SETTINGS ---
-const MAX_TOWERS = 2; // Main Castle + 1 Outpost
-const LOWERED_RANGE = 90; // Reduced tower range
+// Tower settings: range lowered (85px), total count capped at 2
+const MAX_TOWERS = 2;
+const LOWERED_RANGE = 85;
 
-// Game Entities
 let towers = [
-  { id: 'main', type: 'castle', x: 500, y: 250, range: LOWERED_RANGE, damage: 15, cooldown: 0, fireRate: 30 }
+  { id: 'main', type: 'castle', x: 500, y: 200, range: LOWERED_RANGE, damage: 15, cooldown: 0, fireRate: 30 }
 ];
 
-let spikes = []; // Max 4
+let spikes = [];
 const MAX_SPIKES = 4;
 
-// Spike Upgrade System Properties
 let spikeUpgrades = {
-  tickDamageUnlocked: false,
-  tickDamage: 0,
-  tickDamageLevel: 0,
-  maxTickDamageLevel: 5, // Reasonable damage cap
-  slowMultiplier: 0.5,  // Base slow down (50% speed)
-  extraSlowPurchased: false
+  tickUnlocked: false,
+  tickDmg: 0,
+  tickLvl: 0,
+  maxTickLvl: 5,
+  slowFactor: 0.5,
+  extraSlowBought: false
 };
 
 let enemies = [];
 let spawnTimer = 0;
 
-// Path waypoints for enemies
 const path = [
-  {x: 0, y: 100},
-  {x: 200, y: 100},
-  {x: 200, y: 380},
-  {x: 500, y: 380},
-  {x: 500, y: 250}
+  {x: 0, y: 80},
+  {x: 220, y: 80},
+  {x: 220, y: 320},
+  {x: 500, y: 320},
+  {x: 500, y: 200}
 ];
 
-// Handle map clicks for placing items
 canvas.addEventListener('click', (e) => {
   const rect = canvas.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const clickY = e.clientY - rect.top;
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
 
   if (buildMode === 'outpost') {
     if (towers.length < MAX_TOWERS && tokens >= 20) {
       towers.push({
         id: 'outpost',
         type: 'outpost',
-        x: clickX,
-        y: clickY,
+        x: x,
+        y: y,
         range: LOWERED_RANGE,
         damage: 10,
         cooldown: 0,
-        fireRate: 40
+        fireRate: 35
       });
       tokens -= 20;
       buildMode = null;
@@ -193,7 +162,7 @@ canvas.addEventListener('click', (e) => {
     }
   } else if (buildMode === 'spikes') {
     if (spikes.length < MAX_SPIKES && tokens >= 15) {
-      spikes.push({ x: clickX, y: clickY, size: 24 });
+      spikes.push({ x: x, y: y, radius: 22 });
       tokens -= 15;
       buildMode = null;
       updateUI();
@@ -206,17 +175,26 @@ function setBuildMode(mode) {
   updateUI();
 }
 
-// --- UPGRADE FUNCTIONS ---
-function upgradeCastleDamage() {
-  const main = towers.find(t => t.type === 'castle');
-  if (main && tokens >= 10) {
+function toggleOutpostUpgradeMenu() {
+  const sub = document.getElementById('sub-outpost');
+  sub.style.display = (sub.style.display === 'none') ? 'block' : 'none';
+}
+
+function toggleSpikeUpgradeMenu() {
+  const sub = document.getElementById('sub-spikes');
+  sub.style.display = (sub.style.display === 'none') ? 'block' : 'none';
+}
+
+function upgradeCastle() {
+  const castle = towers.find(t => t.type === 'castle');
+  if (castle && tokens >= 10) {
     tokens -= 10;
-    main.damage += 5;
+    castle.damage += 5;
     updateUI();
   }
 }
 
-function upgradeOutpostDamage() {
+function upgradeOutpost() {
   const outpost = towers.find(t => t.type === 'outpost');
   if (outpost && tokens >= 10) {
     tokens -= 10;
@@ -226,84 +204,76 @@ function upgradeOutpostDamage() {
 }
 
 function unlockSpikeDamage() {
-  if (!spikeUpgrades.tickDamageUnlocked && tokens >= 10) {
+  if (!spikeUpgrades.tickUnlocked && tokens >= 10) {
     tokens -= 10;
-    spikeUpgrades.tickDamageUnlocked = true;
-    spikeUpgrades.tickDamage = 2;
-    spikeUpgrades.tickDamageLevel = 1;
+    spikeUpgrades.tickUnlocked = true;
+    spikeUpgrades.tickDmg = 2;
+    spikeUpgrades.tickLvl = 1;
     updateUI();
   }
 }
 
 function upgradeSpikeDamage() {
-  if (spikeUpgrades.tickDamageUnlocked && spikeUpgrades.tickDamageLevel < spikeUpgrades.maxTickDamageLevel && tokens >= 5) {
+  if (spikeUpgrades.tickUnlocked && spikeUpgrades.tickLvl < spikeUpgrades.maxTickLvl && tokens >= 5) {
     tokens -= 5;
-    spikeUpgrades.tickDamageLevel++;
-    spikeUpgrades.tickDamage += 2; // Capped max tick damage = 10
+    spikeUpgrades.tickLvl++;
+    spikeUpgrades.tickDmg += 2; // Capped max = 10 tick damage
     updateUI();
   }
 }
 
 function upgradeSpikeSlow() {
-  if (!spikeUpgrades.extraSlowPurchased && tokens >= 10) {
+  if (!spikeUpgrades.extraSlowBought && tokens >= 10) {
     tokens -= 10;
-    spikeUpgrades.extraSlowPurchased = true;
-    spikeUpgrades.slowMultiplier = 0.25; // Slows enemy down to 25% speed
+    spikeUpgrades.extraSlowBought = true;
+    spikeUpgrades.slowFactor = 0.25; // 75% speed reduction
     updateUI();
   }
 }
 
-// --- GAME LOOP & UPDATES ---
 function update() {
-  // Spawn enemies
   spawnTimer++;
-  if (spawnTimer > 100) {
+  if (spawnTimer > 90) {
     enemies.push({
       x: path[0].x,
       y: path[0].y,
-      pathIndex: 0,
-      hp: 50,
-      maxHp: 50,
-      baseSpeed: 1.5,
-      currentSpeed: 1.5
+      pathIdx: 0,
+      hp: 40,
+      maxHp: 40,
+      speed: 1.6,
+      currentSpeed: 1.6
     });
     spawnTimer = 0;
   }
 
-  // Enemy movement & traps interaction
   for (let i = enemies.length - 1; i >= 0; i--) {
     let e = enemies[i];
-    e.currentSpeed = e.baseSpeed;
+    e.currentSpeed = e.speed;
 
-    // Check interaction with spike traps
-    spikes.forEach(spike => {
-      let dist = Math.hypot(e.x - spike.x, e.y - spike.y);
-      if (dist < spike.size) {
-        // Apply Slowdown
-        e.currentSpeed = e.baseSpeed * spikeUpgrades.slowMultiplier;
-        
-        // Apply Tick Damage if unlocked
-        if (spikeUpgrades.tickDamageUnlocked) {
-          e.hp -= spikeUpgrades.tickDamage / 30; // Scale tick damage per frame
+    // Spike trap interactions
+    spikes.forEach(s => {
+      let dist = Math.hypot(e.x - s.x, e.y - s.y);
+      if (dist < s.radius) {
+        e.currentSpeed = e.speed * spikeUpgrades.slowFactor;
+        if (spikeUpgrades.tickUnlocked) {
+          e.hp -= spikeUpgrades.tickDmg / 30;
         }
       }
     });
 
-    // Advance position along path
-    let target = path[e.pathIndex + 1];
+    let target = path[e.pathIdx + 1];
     if (target) {
       let dx = target.x - e.x;
       let dy = target.y - e.y;
       let dist = Math.hypot(dx, dy);
 
       if (dist < e.currentSpeed) {
-        e.pathIndex++;
+        e.pathIdx++;
       } else {
         e.x += (dx / dist) * e.currentSpeed;
         e.y += (dy / dist) * e.currentSpeed;
       }
     } else {
-      // Reached castle end
       enemies.splice(i, 1);
       continue;
     }
@@ -315,7 +285,6 @@ function update() {
     }
   }
 
-  // Towers attack targeting
   towers.forEach(t => {
     if (t.cooldown > 0) t.cooldown--;
     else {
@@ -328,156 +297,130 @@ function update() {
   });
 }
 
-// --- RENDERING ---
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw Path
-  ctx.strokeStyle = '#a3b18a';
-  ctx.lineWidth = 30;
+  // Path
+  ctx.strokeStyle = '#8b939c';
+  ctx.lineWidth = 26;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.beginPath();
-  path.forEach((p, index) => {
-    if (index === 0) ctx.moveTo(p.x, p.y);
+  path.forEach((p, idx) => {
+    if (idx === 0) ctx.moveTo(p.x, p.y);
     else ctx.lineTo(p.x, p.y);
   });
   ctx.stroke();
 
-  // Draw Spikes
+  // Spikes
   spikes.forEach(s => {
-    ctx.fillStyle = '#7209b7';
+    ctx.fillStyle = '#555';
     ctx.beginPath();
-    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Draw metallic spike details
-    ctx.strokeStyle = '#4cc9f0';
+    // Metallic spike details
+    ctx.strokeStyle = '#ddd';
     ctx.lineWidth = 2;
-    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
-      let sx = s.x + Math.cos(angle) * (s.size - 4);
-      let sy = s.y + Math.sin(angle) * (s.size - 4);
+    for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+      let px = s.x + Math.cos(a) * (s.radius - 3);
+      let py = s.y + Math.sin(a) * (s.radius - 3);
       ctx.beginPath();
       ctx.moveTo(s.x, s.y);
-      ctx.lineTo(sx, sy);
+      ctx.lineTo(px, py);
       ctx.stroke();
     }
   });
 
-  // Draw Towers
+  // Towers
   towers.forEach(t => {
-    // Range circle outline
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    // Range ring
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(t.x, t.y, t.range, 0, Math.PI * 2);
     ctx.stroke();
 
     if (t.type === 'castle') {
-      // --- DRAW CASTLE VISUALS ---
-      // Castle base
-      ctx.fillStyle = '#6c757d';
-      ctx.fillRect(t.x - 25, t.y - 25, 50, 50);
+      // Main Castle visual
+      ctx.fillStyle = '#777';
+      ctx.fillRect(t.x - 20, t.y - 20, 40, 40);
       
-      // Battlements / Turrets
-      ctx.fillStyle = '#495057';
-      ctx.fillRect(t.x - 27, t.y - 27, 12, 12);
-      ctx.fillRect(t.x + 15, t.y - 27, 12, 12);
-      ctx.fillRect(t.x - 27, t.y + 15, 12, 12);
-      ctx.fillRect(t.x + 15, t.y + 15, 12, 12);
+      ctx.fillStyle = '#444';
+      ctx.fillRect(t.x - 22, t.y - 22, 10, 10);
+      ctx.fillRect(t.x + 12, t.y - 22, 10, 10);
+      ctx.fillRect(t.x - 22, t.y + 12, 10, 10);
+      ctx.fillRect(t.x + 12, t.y + 12, 10, 10);
 
-      // Wooden Keep Door
-      ctx.fillStyle = '#3d0c02';
-      ctx.fillRect(t.x - 7, t.y + 10, 14, 15);
-
-      // Flag
-      ctx.strokeStyle = '#d62828';
-      ctx.lineWidth = 2;
+      ctx.fillStyle = '#332211';
+      ctx.fillRect(t.x - 6, t.y + 8, 12, 12);
+    } else if (t.type === 'outpost') {
+      // Extra Outpost visual
+      ctx.strokeStyle = '#8B4513';
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(t.x, t.y - 5);
-      ctx.lineTo(t.x + 12, t.y - 10);
-      ctx.lineTo(t.x, t.y - 15);
-      ctx.fillStyle = '#d62828';
-      ctx.fill();
-    } 
-    else if (t.type === 'outpost') {
-      // --- DRAW OUTPOST VISUALS ---
-      // Wooden Support Beams
-      ctx.strokeStyle = '#7f4f24';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(t.x - 15, t.y + 18); ctx.lineTo(t.x, t.y - 10);
-      ctx.moveTo(t.x + 15, t.y + 18); ctx.lineTo(t.x, t.y - 10);
+      ctx.moveTo(t.x - 12, t.y + 15); ctx.lineTo(t.x, t.y - 8);
+      ctx.moveTo(t.x + 12, t.y + 15); ctx.lineTo(t.x, t.y - 8);
       ctx.stroke();
 
-      // Platform
-      ctx.fillStyle = '#936639';
-      ctx.fillRect(t.x - 16, t.y - 12, 32, 12);
+      ctx.fillStyle = '#A0522D';
+      ctx.fillRect(t.x - 14, t.y - 10, 28, 10);
 
-      // Thatched Watchtower Roof
-      ctx.fillStyle = '#b08968';
+      ctx.fillStyle = '#CD853F';
       ctx.beginPath();
-      ctx.moveTo(t.x - 20, t.y - 12);
-      ctx.lineTo(t.x, t.y - 28);
-      ctx.lineTo(t.x + 20, t.y - 12);
+      ctx.moveTo(t.x - 16, t.y - 10);
+      ctx.lineTo(t.x, t.y - 22);
+      ctx.lineTo(t.x + 16, t.y - 10);
       ctx.closePath();
       ctx.fill();
     }
   });
 
-  // Draw Enemies
+  // Enemies
   enemies.forEach(e => {
-    ctx.fillStyle = '#e63946';
+    ctx.fillStyle = '#d9534f';
     ctx.beginPath();
-    ctx.arc(e.x, e.y, 10, 0, Math.PI * 2);
+    ctx.arc(e.x, e.y, 8, 0, Math.PI * 2);
     ctx.fill();
 
     // HP Bar
     ctx.fillStyle = '#000';
-    ctx.fillRect(e.x - 12, e.y - 18, 24, 4);
-    ctx.fillStyle = '#00f5d4';
-    ctx.fillRect(e.x - 12, e.y - 18, (e.hp / e.maxHp) * 24, 4);
+    ctx.fillRect(e.x - 10, e.y - 14, 20, 3);
+    ctx.fillStyle = '#5cb85c';
+    ctx.fillRect(e.x - 10, e.y - 14, (e.hp / e.maxHp) * 20, 3);
   });
 }
 
 function updateUI() {
-  document.getElementById('token-count').innerText = tokens;
-  document.getElementById('tower-count').innerText = towers.length;
+  document.getElementById('tokens-val').innerText = Math.floor(tokens);
+  document.getElementById('towers-val').innerText = towers.length;
   document.getElementById('spike-count').innerText = spikes.length;
 
-  // Build Buttons State
-  const outpostBtn = document.getElementById('btn-build-outpost');
-  outpostBtn.disabled = (towers.length >= MAX_TOWERS || tokens < 20);
-  outpostBtn.classList.toggle('btn-active', buildMode === 'outpost');
+  document.getElementById('btn-mode-outpost').disabled = (towers.length >= MAX_TOWERS || tokens < 20);
+  document.getElementById('btn-mode-outpost').classList.toggle('active-btn', buildMode === 'outpost');
 
-  const spikeBtn = document.getElementById('btn-build-spikes');
-  spikeBtn.disabled = (spikes.length >= MAX_SPIKES || tokens < 15);
-  spikeBtn.classList.toggle('btn-active', buildMode === 'spikes');
+  document.getElementById('btn-mode-spikes').disabled = (spikes.length >= MAX_SPIKES || tokens < 15);
+  document.getElementById('btn-mode-spikes').classList.toggle('active-btn', buildMode === 'spikes');
 
-  // Outpost Upgrade Button State
   const hasOutpost = towers.some(t => t.type === 'outpost');
-  document.getElementById('btn-upg-outpost-dmg').disabled = (!hasOutpost || tokens < 10);
+  document.getElementById('btn-outpost-dmg').disabled = (!hasOutpost || tokens < 10);
 
-  // Spike Upgrades State
-  const unlockDmgBtn = document.getElementById('btn-spk-unlock-dmg');
-  unlockDmgBtn.disabled = (spikeUpgrades.tickDamageUnlocked || tokens < 10);
+  document.getElementById('btn-spk-unlock').disabled = (spikeUpgrades.tickUnlocked || tokens < 10);
+  
+  document.getElementById('spk-lvl').innerText = spikeUpgrades.tickLvl;
+  document.getElementById('btn-spk-dmg').disabled = (!spikeUpgrades.tickUnlocked || spikeUpgrades.tickLvl >= spikeUpgrades.maxTickLvl || tokens < 5);
 
-  const upgDmgBtn = document.getElementById('btn-spk-upg-dmg');
-  document.getElementById('spk-dmg-lvl').innerText = spikeUpgrades.tickDamageLevel;
-  upgDmgBtn.disabled = (!spikeUpgrades.tickDamageUnlocked || spikeUpgrades.tickDamageLevel >= spikeUpgrades.maxTickDamageLevel || tokens < 5);
-
-  const upgSlowBtn = document.getElementById('btn-spk-upg-slow');
-  upgSlowBtn.disabled = (spikeUpgrades.extraSlowPurchased || tokens < 10);
+  document.getElementById('btn-spk-slow').disabled = (spikeUpgrades.extraSlowBought || tokens < 10);
 }
 
-function gameLoop() {
+function loop() {
   update();
   draw();
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(loop);
 }
 
 updateUI();
-gameLoop();
+loop();
 </script>
 </body>
 </html>
