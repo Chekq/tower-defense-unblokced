@@ -56,9 +56,9 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Main Turret Minigun Barrels:</b> Buying the minigun now renders animated dual barrels on the central base that point at targets, spin, and recoil while firing.</li>
-   <li><b>Enhanced Tracers:</b> Minigun bullet tracers are wider, brighter, and remain visible longer.</li>
-   <li><b>Reduced Screen Shake:</b> Optimized recoil feedback to improve overall gameplay clarity.</li>
+   <li><b>Elongated Minigun Barrels:</b> Main turret minigun barrels are significantly longer, wider, and equipped with detailed cooling vents and muzzle brakes.</li>
+   <li><b>Dynamic Thermal Heat FX:</b> Sustained minigun fire heats up the barrels, glowing from fiery crimson to white-hot incandescent orange with a dynamic bloom aura.</li>
+   <li><b>Aligned Muzzle FX:</b> Muzzle flashes, brass shells, and tracers now originate precisely from the tip of the extended barrels.</li>
   </ul>
  </div>
  <button id="pnClose" style="width:100%;">Got it!</button>
@@ -103,7 +103,7 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.2.0';
+const GAME_VERSION = 'v1.3.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
@@ -133,7 +133,7 @@ function init(){
     lightnings:[],sparks:[],shells:[],miniSmoke:[],miniSparks:[],en:[],
     spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],
     ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false,
-    shake:0,flash:0,recoil:0,miniAngle:0,barrelSpin:0,
+    shake:0,flash:0,recoil:0,miniAngle:0,barrelSpin:0,heat:0,
     towers:[],placingTower:false,selectedTower:null,mousePos:{x:0,y:0}};
  $('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;$('tp').hidden=true;$('placeBanner').hidden=true;
  nextWave();
@@ -171,7 +171,7 @@ function update(dt){
  S.tgt=near;
  if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
  
- // Base Minigun Target & Firing Logic
+ // Base Minigun Target, Firing & Heat Logic
  if(S.mini){
   const arm = inr.filter(e=>e.ar&&e.h>0);
   const pool = arm.length ? arm : inr.filter(e=>e.h>0);
@@ -193,16 +193,18 @@ function update(dt){
     S.recoil = 4;
     S.shake = Math.max(S.shake, 0.8);
     S.barrelSpin = (S.barrelSpin || 0) + 1.2;
+    S.heat = Math.min(1, S.heat + 0.035);
 
-    const barrelTipX = cx + Math.cos(angle) * (MR + 10);
-    const barrelTipY = cy + Math.sin(angle) * (MR + 10);
+    // Tip position adjusted for elongated barrels (36px total offset from center)
+    const barrelTipX = cx + Math.cos(angle) * (MR + 22);
+    const barrelTipY = cy + Math.sin(angle) * (MR + 22);
 
     S.mFlashes.push({x: barrelTipX, y: barrelTipY, angle, t: 0.05, maxT: 0.05});
 
     const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
     const brassSpd = 80 + Math.random() * 110;
     S.shells.push({
-     x: cx, y: cy,
+     x: cx + Math.cos(angle)*10, y: cy + Math.sin(angle)*10,
      vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
      rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
      t: 0.4 + Math.random()*0.2, maxT: 0.6
@@ -237,6 +239,10 @@ function update(dt){
     S.mcd+=1/16;
    }
   }
+  // Thermal cooling over time
+  S.heat = Math.max(0, S.heat - dt * 0.35);
+ } else {
+  S.heat = 0;
  }
 
  // Placed Extra Towers Behavior
@@ -264,9 +270,10 @@ function update(dt){
      if(best.h <= 0) break;
      hit(best, mDmg(tw.level) * (best.ar ? 1.5 : 1));
      tw.recoil = 4;
+     tw.heat = Math.min(1, (tw.heat || 0) + 0.04);
      
-     const mx = tw.x + Math.cos(angle) * 14;
-     const my = tw.y + Math.sin(angle) * 14;
+     const mx = tw.x + Math.cos(angle) * 18;
+     const my = tw.y + Math.sin(angle) * 18;
 
      S.mFlashes.push({x: mx, y: my, angle, t: 0.05, maxT: 0.05});
 
@@ -311,6 +318,9 @@ function update(dt){
    }
   } else {
    tw.mcd = 0;
+  }
+  if(tw.type === 'minigun') {
+   tw.heat = Math.max(0, (tw.heat || 0) - dt * 0.35);
   }
   if(tw.recoil > 0) tw.recoil = Math.max(0, tw.recoil - dt * 25);
  }
@@ -532,13 +542,35 @@ function draw(){
    ctx.beginPath(); ctx.arc(0, 0, 5, 0, TAU);
    ctx.fillStyle = '#ef4444'; ctx.fill();
   } else {
-   ctx.fillStyle = '#475569';
-   ctx.fillRect(0, -4, 11, 2.5);
-   ctx.fillRect(0, 1.5, 11, 2.5);
-   ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU);
-   ctx.fillStyle = '#f59e0b'; ctx.fill();
-   ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU);
-   ctx.fillStyle = '#78350f'; ctx.fill();
+   const th = tw.heat || 0;
+   let r = Math.round(71 + th * 184);
+   let g = Math.round(85 - th * 20 + th * 155);
+   let b = Math.round(105 - th * 50);
+   const tHeatCol = `rgb(${r},${g},${b})`;
+
+   if(th > 0.15) {
+    ctx.save();
+    ctx.shadowColor = `rgba(249, 115, 22, ${th})`;
+    ctx.shadowBlur = 8 * th;
+    ctx.fillStyle = tHeatCol;
+    ctx.fillRect(0, -5, 16, 3);
+    ctx.fillRect(0, 2, 16, 3);
+    ctx.restore();
+   }
+
+   ctx.fillStyle = '#1e293b';
+   ctx.fillRect(0, -5, 16, 3);
+   ctx.fillRect(0, 2, 16, 3);
+
+   ctx.fillStyle = tHeatCol;
+   ctx.fillRect(1, -4, 14, 1);
+   ctx.fillRect(1, 3, 14, 1);
+
+   ctx.fillStyle = th > 0.4 ? tHeatCol : '#f59e0b';
+   ctx.fillRect(16, -6, 3, 12);
+
+   ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
+   ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
   }
   ctx.restore();
 
@@ -660,25 +692,63 @@ function draw(){
  // Minigun Barrels Visual
  if(S.mini) {
   const spin = S.barrelSpin || 0;
-  const off1 = Math.sin(spin) * 2.5;
-  const off2 = -Math.sin(spin) * 2.5;
+  const off1 = Math.sin(spin) * 3;
+  const off2 = -Math.sin(spin) * 3;
+  const h = S.heat || 0;
 
-  // Heavy turret mount casing
+  // Dynamic Heat Color Interpolation: Dark Metallic -> Deep Red -> Bright Orange -> Incandescent Yellow
+  let r, g, b;
+  if(h < 0.5) {
+   const t = h / 0.5;
+   r = Math.round(30 + t * (239 - 30));
+   g = Math.round(41 + t * (68 - 41));
+   b = Math.round(59 + t * (68 - 59));
+  } else {
+   const t = (h - 0.5) / 0.5;
+   r = Math.round(239 + t * (254 - 239));
+   g = Math.round(68 + t * (240 - 68));
+   b = Math.round(68 + t * (138 - 68));
+  }
+  const heatColor = `rgb(${r},${g},${b})`;
+
+  // Heavy turret mount casing & receiver
   ctx.fillStyle = '#334155';
-  ctx.fillRect(2, -7, 8, 14);
+  ctx.fillRect(0, -9, 10, 18);
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(4, -7, 8, 14);
 
-  // Twin rotating/recoiling barrels extending forward
+  // Barrel Thermal Bloom Glow Effect when hot
+  if(h > 0.12) {
+   ctx.save();
+   ctx.shadowColor = `rgba(249, 115, 22, ${h * 0.95})`;
+   ctx.shadowBlur = 14 * h;
+   ctx.fillStyle = heatColor;
+   ctx.fillRect(10, -7 + off1, 24, 4);
+   ctx.fillRect(10, 3 + off2, 24, 4);
+   ctx.restore();
+  }
+
+  // Twin long heavy rotating/recoiling barrels (Extended length: 24px)
   ctx.fillStyle = '#0f172a';
-  ctx.fillRect(8, -5 + off1, 14, 3);
-  ctx.fillRect(8, 2 + off2, 14, 3);
+  ctx.fillRect(10, -7 + off1, 24, 4);
+  ctx.fillRect(10, 3 + off2, 24, 4);
 
-  // Metallic barrel tips / muzzle brake
-  ctx.fillStyle = '#f59e0b';
-  ctx.fillRect(20, -6, 3, 12);
+  // Heated Inner Barrel Cores
+  ctx.fillStyle = heatColor;
+  ctx.fillRect(11, -6 + off1, 22, 2);
+  ctx.fillRect(11, 4 + off2, 22, 2);
+
+  // Vent perforated cooling shroud ring
+  ctx.fillStyle = '#475569';
+  ctx.fillRect(16, -8, 4, 16);
+
+  // Heavy Muzzle Brake / Tip
+  ctx.fillStyle = h > 0.4 ? heatColor : '#f59e0b';
+  ctx.fillRect(32, -8, 4, 16);
 
   // Central turret cap
-  ctx.beginPath(); ctx.arc(0, 0, 7, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
-  ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
+  ctx.beginPath(); ctx.arc(0, 0, 8, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
+  ctx.beginPath(); ctx.arc(0, 0, 4, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
  }
 
  ctx.restore();
@@ -753,6 +823,7 @@ $('tRows').onclick = e => {
   t.type = 'minigun';
   t.level = 1;
   t.mcd = 0;
+  t.heat = 0;
  } else if(b.id === 'btnUpMini') {
   if(S.tok<1 && !S.infTok) return;
   if(!S.infTok) S.tok -= 1;
@@ -793,7 +864,7 @@ cv.onclick = e => {
  const y = e.clientY - rect.top;
 
  if(S.placingTower) {
-  S.towers.push({ x, y, type: 'laser', level: 1, mcd: 0, recoil: 0, angle: 0, tgt: null });
+  S.towers.push({ x, y, type: 'laser', level: 1, mcd: 0, recoil: 0, angle: 0, tgt: null, heat: 0 });
   S.placingTower = false;
   $('placeBanner').hidden = true;
   return;
