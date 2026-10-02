@@ -90,14 +90,30 @@ const topLv=()=>1+Math.floor((S.wave-1)/10);
 const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
 function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
 function resize(){const d=Math.min(devicePixelRatio||1,2),a=$('app');W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);cx=W/2;cy=H/2+20;R=Math.max(100,Math.min(210,Math.min(W,H)*.3));SR=Math.hypot(W,H)/2+30;readTheme()}
-function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,lightnings:[],en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false};$('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;nextWave()}
+function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,lightnings:[],sparks:[],en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false,shake:0,flash:0};$('go').hidden=true;$('up').hidden=true;$('dt').hidden=true;nextWave()}
 function nextWave(){S.wave++;S.spawn=8+2*S.wave;S.iv=12/S.spawn;S.st=0;S.inter=0;S.ban=2.4;S.bt='Wave '+S.wave+((S.wave-1)%10==0&&S.wave>1?' - new enemy level '+topLv()+'!':'')}
 function spawn(){const t=topLv(),L=t==1?1:Math.random()<.55?t:1+Math.floor(Math.random()*t),a=Math.random()*TAU,h=Math.round((24+5*S.wave)*2**(L-1));
  S.en.push({x:cx+Math.cos(a)*SR,y:cy+Math.sin(a)*SR,L,h,m:h,v:32+4*L+Math.random()*10,d:Math.round(4*1.6**(L-1)),r:7+Math.min(L,12)*1.2,cd:0,ar:L>=6,fl:0})}
 function hit(e,d){if(e.h<=0)return;S.acc+=Math.min(d,e.h);e.h-=d;e.fl=.08;let t=thr();while(S.acc>=t){S.acc-=t;if(!S.infTok)S.tok++;t=thr()}}
+
+function generateBoltPoints(startX, startY, endX, endY, segs) {
+ const pts = [{x: startX, y: startY}];
+ for(let i=1; i<segs; i++){
+  const ratio = i/segs;
+  const nx = startX + (endX - startX) * ratio + (Math.random() - 0.5) * 45;
+  const ny = startY + (endY - startY) * ratio + (Math.random() - 0.5) * 20;
+  pts.push({x: nx, y: ny});
+ }
+ pts.push({x: endX, y: endY});
+ return pts;
+}
+
 function update(dt){
  if(S.infTok)S.tok=999999;
  if(S.ban>0)S.ban-=dt;if(S.hit>0)S.hit-=dt;
+ S.shake = Math.max(0, S.shake - dt * 40);
+ S.flash = Math.max(0, S.flash - dt * 3);
+
  if(S.spawn>0){S.st-=dt;while(S.st<=0&&S.spawn>0){spawn();S.spawn--;S.st+=S.iv}}
  const inr=[];let near=null,nd=1e9;
  for(const e of S.en){const dx=cx-e.x,dy=cy-e.y,d=Math.hypot(dx,dy);e.fl=Math.max(0,e.fl-dt);
@@ -131,14 +147,54 @@ function update(dt){
     for(const e of S.en){if(e.h>maxHp){maxHp=e.h;target=e;}}
     if(target){
      hit(target, target.h*(2/3));
-     S.lightnings.push({x:target.x, y:target.y, t:.4});
+     
+     // Generate main heavy bolt points + secondary branch points
+     const mainPts = generateBoltPoints(target.x + (Math.random()-0.5)*40, -20, target.x, target.y, 10);
+     const branches = [];
+     for(let i=2; i<mainPts.length-2; i++){
+      if(Math.random() < 0.6) {
+       const p = mainPts[i];
+       const bAngle = (Math.random() - 0.5) * Math.PI;
+       const bLen = 30 + Math.random() * 40;
+       branches.push([
+        p,
+        {x: p.x + Math.sin(bAngle)*bLen, y: p.y + Math.cos(bAngle)*bLen}
+       ]);
+      }
+     }
+
+     S.lightnings.push({x:target.x, y:target.y, pts: mainPts, branches, t:.45, maxT:.45});
+     
+     // Spawn heavy explosive sparks
+     for(let i=0; i<25; i++) {
+      const ang = Math.random() * TAU;
+      const spd = 120 + Math.random() * 260;
+      S.sparks.push({
+       x: target.x, y: target.y,
+       vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+       t: 0.3 + Math.random() * 0.2, maxT: 0.5
+      });
+     }
+
+     S.shake = 16;
+     S.flash = 0.35;
      S.bcd=6.3;
     }
    }else{S.bcd=0;}
   }
  }
+
  for(const l of S.lightnings)l.t-=dt;
  S.lightnings=S.lightnings.filter(l=>l.t>0);
+
+ for(const s of S.sparks){
+  s.x += s.vx * dt;
+  s.y += s.vy * dt;
+  s.vx *= 0.92;
+  s.vy *= 0.92;
+  s.t -= dt;
+ }
+ S.sparks=S.sparks.filter(s=>s.t>0);
 
  S.en=S.en.filter(e=>e.h>0);
  for(const t of S.tr)t.t-=dt;S.tr=S.tr.filter(t=>t.t>0);
@@ -150,7 +206,14 @@ function update(dt){
 }
 function line(x,y){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke()}
 function draw(){
- ctx.fillStyle=theme.bg;ctx.fillRect(0,0,W,H);
+ ctx.save();
+ if(S.shake > 0) {
+  const rx = (Math.random() - 0.5) * S.shake;
+  const ry = (Math.random() - 0.5) * S.shake;
+  ctx.translate(rx, ry);
+ }
+
+ ctx.fillStyle=theme.bg;ctx.fillRect(-20,-20,W+40,H+40);
  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle=theme.range;ctx.fill();ctx.strokeStyle=theme.rline;ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
  ctx.lineCap='round';
 
@@ -183,22 +246,89 @@ function draw(){
   ctx.fillStyle='#0b1020';ctx.fillText(e.L,e.x,e.y+.5);
   if(e.h<e.m){const w=e.r*2;ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(e.x-e.r,e.y-e.r-7,w,3);ctx.fillStyle='#22c55e';ctx.fillRect(e.x-e.r,e.y-e.r-7,w*e.h/e.m,3)}}
 
+ // Render Heavy Lightning Effects
  for(const l of S.lightnings){
-  const a=Math.max(0,l.t/.4),segs=8;
+  const alpha = Math.max(0, l.t / l.maxT);
+  const prog = 1 - alpha;
+  
   ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // 1. Massive outer electric aura
   ctx.beginPath();
-  let x=l.x+(Math.random()-.5)*20,y=0;
-  ctx.moveTo(x,y);
-  for(let i=1;i<=segs;i++){
-   let ny=(l.y/segs)*i,nx=(i===segs)?l.x:l.x+(Math.random()-.5)*35;
-   ctx.lineTo(nx,ny);
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(56,189,248,${alpha * 0.4})`;
+  ctx.lineWidth = 28;
+  ctx.stroke();
+
+  // 2. Heavy blue/cyan main bolt
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(14,165,233,${alpha})`;
+  ctx.lineWidth = 12;
+  ctx.stroke();
+
+  // 3. Bright cyan inner core
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(186,230,253,${alpha})`;
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  // 4. Pure white center beam
+  ctx.beginPath();
+  ctx.moveTo(l.pts[0].x, l.pts[0].y);
+  for(let i=1; i<l.pts.length; i++) ctx.lineTo(l.pts[i].x, l.pts[i].y);
+  ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // 5. Draw jagged side branches
+  for(const b of l.branches) {
+   ctx.beginPath();
+   ctx.moveTo(b[0].x, b[0].y);
+   ctx.lineTo(b[1].x, b[1].y);
+   ctx.strokeStyle = `rgba(56,189,248,${alpha * 0.8})`;
+   ctx.lineWidth = 3;
+   ctx.stroke();
+   ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+   ctx.lineWidth = 1;
+   ctx.stroke();
   }
-  ctx.strokeStyle=`rgba(56,189,248,${a})`;ctx.lineWidth=Math.random()*4+8;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
-  ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=4;ctx.stroke();
-  ctx.beginPath();ctx.arc(l.x,0,45*a,0,TAU);ctx.fillStyle=`rgba(56,189,248,${a*.5})`;ctx.fill();
-  ctx.beginPath();ctx.arc(l.x,l.y,(1-a)*45+10,0,TAU);ctx.strokeStyle=`rgba(250,204,21,${a})`;ctx.lineWidth=4;ctx.stroke();
-  ctx.beginPath();ctx.arc(l.x,l.y,20*a,0,TAU);ctx.fillStyle=`rgba(255,255,255,${a*.8})`;ctx.fill();
+
+  // Heavy Ground Impact Shockwaves
+  const shockR = prog * 70 + 10;
+  ctx.beginPath();
+  ctx.arc(l.x, l.y, shockR, 0, TAU);
+  ctx.strokeStyle = `rgba(56,189,248,${alpha})`;
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(l.x, l.y, shockR * 0.5, 0, TAU);
+  ctx.fillStyle = `rgba(224,242,254,${alpha * 0.5})`;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(l.x, l.y, shockR * 1.2, 0, TAU);
+  ctx.strokeStyle = `rgba(250,204,21,${alpha * 0.6})`;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
   ctx.restore();
+ }
+
+ // Render Sparks
+ for(const s of S.sparks) {
+  const a = s.t / s.maxT;
+  ctx.beginPath();
+  ctx.arc(s.x, s.y, 2.5, 0, TAU);
+  ctx.fillStyle = `rgba(186,230,253,${a})`;
+  ctx.fill();
  }
 
  for(const f of S.mFlashes) {
@@ -211,6 +341,14 @@ function draw(){
  ctx.beginPath();ctx.arc(cx,cy,MR,0,TAU);ctx.fillStyle=S.hit>0?'#ef4444':theme.core;ctx.fill();ctx.lineWidth=3;ctx.strokeStyle=theme.bg;ctx.stroke();
  if(S.mini){ctx.beginPath();ctx.arc(cx,cy,5,0,TAU);ctx.fillStyle='#f59e0b';ctx.fill()}
  if(S.ban>0){ctx.globalAlpha=Math.min(1,S.ban);ctx.fillStyle=theme.ink;ctx.font='bold 26px system-ui,sans-serif';ctx.fillText(S.bt,cx,cy+R+36);ctx.globalAlpha=1}
+
+ // Lightning Sky Flash Overlay
+ if(S.flash > 0) {
+  ctx.fillStyle = `rgba(186, 230, 253, ${S.flash})`;
+  ctx.fillRect(-20, -20, W+40, H+40);
+ }
+
+ ctx.restore();
 }
 function hud(){$('wv').textContent='Wave '+S.wave+' (enemies up to Lv '+topLv()+')';$('lf').textContent=(S.spawn+S.en.length)+' enemies left';$('hpt').textContent='HP '+Math.ceil(S.hp)+' / '+hpMax();$('hpb').style.width=S.hp/hpMax()*100+'\%';$('tk').textContent=S.infTok?'∞':S.tok;$('tb').firstElementChild.style.width=S.infTok?'100\%':Math.min(100,S.acc/thr()*100)+'\%';$('ub').textContent='Upgrades'+(S.tok?' ('+(S.infTok?'∞':S.tok)+')':'')}
 function panel(){const L=S.laser,rows=[
