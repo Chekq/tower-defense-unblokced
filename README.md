@@ -1,6 +1,6 @@
 # tower-defense-unblokced
 
-click link in top/middle right to open
+click link in top/middle right to open or download code from index.html and open to run if link not working 
 
 Objective
 Protect the central core from incoming enemy circles. If enemies reach the center, they attack your base. The game ends when your HP hits zero.
