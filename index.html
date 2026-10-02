@@ -19,10 +19,11 @@ canvas{display:block;width:100%;height:100%}
 .bar{height:8px;border-radius:5px;background:var(--line);overflow:hidden;min-width:110px;margin-top:4px}
 .bar i{display:block;height:100%;width:0;background:var(--hpc)}
 #tb i{background:var(--tok)}
-button{font:inherit;cursor:pointer;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:7px 12px}
+button{font:inherit;cursor:pointer;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:7px 12px;font-weight:600;}
 :root:not([data-theme="light"]) button{color:#0b1020}
 button:disabled{opacity:.4;cursor:not-allowed}
 button.ghost{background:transparent;color:var(--acc)}
+button.active-speed{background:var(--hpc);border-color:var(--hpc);color:#fff;}
 button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:12px}
 .ov[hidden]{display:none}
@@ -41,7 +42,7 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="box"><div id="hpt"></div><div class="bar"><i id="hpb"></i></div></div>
  <div class="box"><div>Tokens: <b id="tk">0</b></div><div class="bar" id="tb" title="Progress to next token"><i></i></div></div>
  <div class="hud-btns">
-  <button id="sb" class="ghost">2x Speed</button>
+  <button id="sb">2x Speed</button>
   <button id="ub">Upgrades</button>
   <button id="db" class="ghost">Dev Tools</button>
  </div>
@@ -222,7 +223,11 @@ $('rows').onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=+b
 
 $('sb').onclick=()=>{
  S.speed=S.speed===1?2:1;
- $('sb').textContent=S.speed===2?'1x Speed':'2x Speed';$('sb').classList.toggle('ghost',S.speed===1);
+ if(S.speed===2){
+  $('sb').textContent='2x Active (1x)';$('sb').classList.add('active-speed');
+ }else{
+  $('sb').textContent='2x Speed';$('sb').classList.remove('active-speed');
+ }
 };
 
 $('db').onclick=()=>{
