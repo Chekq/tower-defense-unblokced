@@ -1,2 +1,5 @@
 # tower-defense-unblokced
-a tower defense game in html
+
+click link in top/middle right to open
+
+
