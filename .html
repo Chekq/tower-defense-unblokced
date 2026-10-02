@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Last Stand</title>
+<style>
+:root{--bg:#eef1f7;--panel:#fff;--ink:#17202f;--mute:#5d6882;--line:#d2d9e6;--acc:#2563eb;--hpc:#16a34a;--tok:#d97706;--range:rgba(37,99,235,.08);--rline:rgba(37,99,235,.5);--core:#2563eb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--panel:#151c30;--ink:#e8edf8;--mute:#93a0be;--line:#2a3452;--acc:#60a5fa;--hpc:#4ade80;--tok:#fbbf24;--range:rgba(96,165,250,.09);--rline:rgba(96,165,250,.6);--core:#60a5fa}}
+:root[data-theme="dark"]{--bg:#0b1020;--panel:#151c30;--ink:#e8edf8;--mute:#93a0be;--line:#2a3452;--acc:#60a5fa;--hpc:#4ade80;--tok:#fbbf24;--range:rgba(96,165,250,.09);--rline:rgba(96,165,250,.6);--core:#60a5fa}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+#app{position:relative;width:100%;height:100%}
+canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;justify-content:space-between;padding:10px;pointer-events:none}
+.hud>*{pointer-events:auto}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.mute,small{color:var(--mute)}
+.bar{height:8px;border-radius:5px;background:var(--line);overflow:hidden;min-width:110px;margin-top:4px}
+.bar i{display:block;height:100%;width:0;background:var(--hpc)}
+#tb i{background:var(--tok)}
+button{font:inherit;cursor:pointer;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:7px 12px}
+:root:not([data-theme="light"]) button{color:#0b1020}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--acc)}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:12px}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;width:min(420px,100%);max-height:100%;overflow:auto}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.row small{display:block}
+h2{margin:0 0 6px;font-size:18px}
+</style>
+</head>
+<body>
+<div id="app">
+<canvas id="c"></canvas>
+<div class="hud">
+ <div class="box"><b id="wv"></b><div class="mute" id="lf"></div></div>
+ <div class="box"><div id="hpt"></div><div class="bar"><i id="hpb"></i></div></div>
+ <div class="box"><div>Tokens: <b id="tk">0</b></div><div class="bar" id="tb" title="Progress to next token"><i></i></div></div>
+ <button id="ub">Upgrades</button>
+</div>
+<div class="ov" id="up" hidden><div class="card">
+ <h2>Upgrades</h2>
+ <div class="mute">Game paused. Tokens: <b id="tk2"></b></div>
+ <div id="rows"></div>
+ <div class="row"><small>Enemies from Lv 6 are armored (grey ring). Minigun deals ×1.5 to them, Laser ×0.75.</small></div>
+ <button id="cl" class="ghost">Resume</button>
+</div></div>
+<div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
+const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
+const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
+const MR=14,TAU=6.2832;
+let W,H,cx,cy,R,SR,S,last=0,fc=0,theme={};
+const lDps=l=>24+9*(l-1),mDmg=l=>1.3+.55*(l-1),hpMax=()=>100+25*S.hpLv;
+const topLv=()=>1+Math.floor((S.wave-1)/10);
+const thr=()=>Math.round((100+45*(S.wave-1))*(1+.5*(topLv()-1)));
+function readTheme(){const s=getComputedStyle(document.documentElement);['bg','range','rline','core','ink','mute'].forEach(k=>theme[k]=s.getPropertyValue('--'+k).trim())}
+function resize(){const d=Math.min(devicePixelRatio||1,2),a=$('app');W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);cx=W/2;cy=H/2+20;R=Math.max(100,Math.min(210,Math.min(W,H)*.3));SR=Math.hypot(W,H)/2+30;readTheme()}
+function init(){S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,en:[],spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],ban:0,bt:'',over:false,tgt:null,hit:0};$('go').hidden=true;$('up').hidden=true;nextWave()}
+function nextWave(){S.wave++;S.spawn=8+2*S.wave;S.iv=12/S.spawn;S.st=0;S.inter=0;S.ban=2.4;S.bt='Wave '+S.wave+((S.wave-1)%10==0&&S.wave>1?' - new enemy level '+topLv()+'!':'')}
+function spawn(){const t=topLv(),L=t==1?1:Math.random()<.55?t:1+Math.floor(Math.random()*t),a=Math.random()*TAU,h=Math.round((24+5*S.wave)*2**(L-1));
+ S.en.push({x:cx+Math.cos(a)*SR,y:cy+Math.sin(a)*SR,L,h,m:h,v:32+4*L+Math.random()*10,d:Math.round(4*1.6**(L-1)),r:7+Math.min(L,12)*1.2,cd:0,ar:L>=6,fl:0})}
+function hit(e,d){if(e.h<=0)return;S.acc+=Math.min(d,e.h);e.h-=d;e.fl=.08;let t=thr();while(S.acc>=t){S.acc-=t;S.tok++;t=thr()}}
+function update(dt){
+ if(S.ban>0)S.ban-=dt;if(S.hit>0)S.hit-=dt;
+ if(S.spawn>0){S.st-=dt;while(S.st<=0&&S.spawn>0){spawn();S.spawn--;S.st+=S.iv}}
+ const inr=[];let near=null,nd=1e9;
+ for(const e of S.en){const dx=cx-e.x,dy=cy-e.y,d=Math.hypot(dx,dy);e.fl=Math.max(0,e.fl-dt);
+  if(d>MR+e.r){e.x+=dx/d*e.v*dt;e.y+=dy/d*e.v*dt}else{e.cd-=dt;if(e.cd<=0){e.cd=1;S.hp-=e.d;S.hit=.15}}
+  if(d-e.r<=R){inr.push(e);if(d<nd){nd=d;near=e}}}
+ S.tgt=near;
+ if(near)hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
+ if(S.mini&&inr.length){S.mcd-=dt;let n=0;while(S.mcd<=0&&n++<8){const e=inr[Math.random()*inr.length|0];hit(e,mDmg(S.mini)*(e.ar?1.5:1));S.tr.push({x:e.x,y:e.y,t:.07});S.mcd+=1/14}}
+ S.en=S.en.filter(e=>e.h>0);
+ for(const t of S.tr)t.t-=dt;S.tr=S.tr.filter(t=>t.t>0);
+ if(S.hp<=0){S.hp=0;S.over=true;$('gt').textContent='You held out until wave '+S.wave+'.';$('go').hidden=false;return}
+ if(!S.spawn&&!S.en.length){S.inter+=dt;if(S.inter>2.5)nextWave()}
+}
+function line(x,y){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke()}
+function draw(){
+ ctx.fillStyle=theme.bg;ctx.fillRect(0,0,W,H);
+ ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle=theme.range;ctx.fill();ctx.strokeStyle=theme.rline;ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
+ ctx.lineCap='round';
+ ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;for(const t of S.tr)line(t.x,t.y);
+ if(S.tgt){ctx.strokeStyle='rgba(239,68,68,.35)';ctx.lineWidth=9;line(S.tgt.x,S.tgt.y);ctx.strokeStyle='#ef4444';ctx.lineWidth=3;line(S.tgt.x,S.tgt.y)}
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 10px system-ui,sans-serif';
+ for(const e of S.en){ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,TAU);ctx.fillStyle=e.fl>0?'#fff':col(e.L);ctx.fill();
+  if(e.ar){ctx.lineWidth=3;ctx.strokeStyle='#94a3b8';ctx.stroke()}
+  ctx.fillStyle='#0b1020';ctx.fillText(e.L,e.x,e.y+.5);
+  if(e.h<e.m){const w=e.r*2;ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(e.x-e.r,e.y-e.r-7,w,3);ctx.fillStyle='#22c55e';ctx.fillRect(e.x-e.r,e.y-e.r-7,w*e.h/e.m,3)}}
+ ctx.beginPath();ctx.arc(cx,cy,MR,0,TAU);ctx.fillStyle=S.hit>0?'#ef4444':theme.core;ctx.fill();ctx.lineWidth=3;ctx.strokeStyle=theme.bg;ctx.stroke();
+ if(S.mini){ctx.beginPath();ctx.arc(cx,cy,5,0,TAU);ctx.fillStyle='#f59e0b';ctx.fill()}
+ if(S.ban>0){ctx.globalAlpha=Math.min(1,S.ban);ctx.fillStyle=theme.ink;ctx.font='bold 26px system-ui,sans-serif';ctx.fillText(S.bt,cx,cy+R+36);ctx.globalAlpha=1}
+}
+function hud(){$('wv').textContent='Wave '+S.wave+' (enemies up to Lv '+topLv()+')';$('lf').textContent=(S.spawn+S.en.length)+' enemies left';
+ $('hpt').textContent='HP '+Math.ceil(S.hp)+' / '+hpMax();$('hpb').style.width=S.hp/hpMax()*100+'%';
+ $('tk').textContent=S.tok;$('tb').firstElementChild.style.width=Math.min(100,S.acc/thr()*100)+'%';$('ub').textContent='Upgrades'+(S.tok?' ('+S.tok+')':'')}
+function panel(){const L=S.laser,rows=[
+ ['Laser','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
+ S.mini?['Minigun','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 14/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun','Very fast fire, low damage per shot. Starts at Lv 1.',3,'Buy','m'],
+ ['Health','Lv '+S.hpLv+': max HP '+hpMax()+', next '+(hpMax()+25),2,'Upgrade','h']];
+ $('rows').innerHTML=rows.map(r=>`<div class="row"><div><b>${r[0]}</b><small>${r[1]}</small></div><button data-k="${r[4]}" data-c="${r[2]}" ${S.tok<r[2]?'disabled':''}>${r[3]} (${r[2]})</button></div>`).join('');$('tk2').textContent=S.tok}
+$('rows').onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=+b.dataset.c,k=b.dataset.k;if(S.tok<c)return;S.tok-=c;if(k=='l')S.laser++;else if(k=='m')S.mini++;else{S.hpLv++;S.hp+=25}panel()};
+$('ub').onclick=()=>{panel();$('up').hidden=false};
+$('cl').onclick=()=>{$('up').hidden=true};
+$('rs').onclick=init;
+function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;if(!S.over&&$('up').hidden)update(dt);if(++fc%60==0)readTheme();hud();draw();requestAnimationFrame(loop)}
+addEventListener('resize',resize);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',readTheme);
+resize();init();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
