@@ -343,7 +343,7 @@ function update(dt){
     let target=null, maxHp=-1;
     for(const e of S.en){if(e.h>maxHp){maxHp=e.h;target=e;}}
     if(target){
-     hit(target, target.h*(2/3));
+     hit(target, target.h*1);
      const mainPts = generateBoltPoints(target.x + (Math.random()-0.5)*40, -20, target.x, target.y, 10);
      const branches = [];
      for(let i=2; i<mainPts.length-2; i++){
@@ -367,9 +367,9 @@ function update(dt){
       });
      }
 
-     S.shake = 16;
+     S.shake = 13;
      S.flash = 0.35;
-     S.bcd=6.3;
+     S.bcd=0.8;
     }
    }else{S.bcd=0;}
   }
@@ -810,7 +810,7 @@ function panel(){
  const rows=[
   ['Laser','Lv '+L+': '+lDps(L)+' dmg/s, next '+lDps(L+1),1,'Upgrade','l'],
   S.mini?['Minigun','Lv '+S.mini+': '+mDmg(S.mini).toFixed(1)+' dmg x 16/s, next '+mDmg(S.mini+1).toFixed(1),1,'Upgrade','m']:['Minigun','Very fast fire, low damage per shot. Starts at Lv 1.',3,'Buy','m'],
-  S.bolt?['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',0,'Owned','b']:['Lightning Bolt','Strikes highest HP enemy every 6.3s for 2/3 HP.',20,'Buy','b'],
+  S.bolt?['Lightning Bolt','Strikes highest HP enemy every 0.8s for 100% HP.',0,'Owned','b']:['Lightning Bolt','Strikes highest HP enemy every 0.8s for 100% HP.',15,'Buy','b'],
   extraTowerRow,
   ['Health','Lv '+S.hpLv+': max HP '+hpMax()+', next '+(hpMax()+25),2,'Upgrade','h']
  ];
