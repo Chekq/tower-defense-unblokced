@@ -56,9 +56,8 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Redesigned Minigun Visuals:</b> Main tower minigun now features a 6-barrel Gatling array with 3D rotation effects.</li>
-   <li><b>Ammo Belt & Receiver Details:</b> Added side ammo feeding belt and heat ventilation slots on the gun casing.</li>
-   <li><b>Enhanced Muzzle Flashes:</b> Multi-pointed explosive starburst flashes with high-temperature white centers.</li>
+   <li><b>Lightning Strike Buff:</b> Reduced strike delay to 0.5 seconds and increased damage to 100% instant kill.</li>
+<li><b>Store Update:</b> Updated the Lightning Bolt description in the upgrade store to reflect the new stats.</li>
   </ul>
  </div>
  <button id="pnClose" style="width:100%;">Got it!</button>
@@ -107,7 +106,7 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.6.0';
+const GAME_VERSION = 'v1.7.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
