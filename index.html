@@ -56,8 +56,9 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Expanded Map:</b> Doubled the main arena size for extra tactical space.</li>
-   <li><b>Dual Main Turrets:</b> Unlocking the Minigun now splits your main tower into separate Laser and Minigun turrets with independent aiming!</li>
+   <li><b>Bigger Main Base & Turrets:</b> The main command tower base, laser turret, and minigun cannon models are now larger and visually enhanced!</li>
+   <li><b>Tightened Engagement Range:</b> Base defense perimeter and tower range have been slightly lowered for more tense, close-quarters combat.</li>
+   <li><b>Minigun Micro-Bursts & Ricochets:</b> Authentic Gatling firing rhythm and spark ricochets off armored enemies.</li>
   </ul>
  </div>
  <button id="pnClose" style="width:100%;">Got it!</button>
@@ -106,11 +107,11 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.8.0';
+const GAME_VERSION = 'v2.0.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
-const MR=14,TAU=6.283185307179586,TOWER_RANGE=200,MAX_TOWERS=2;
+const MR=22,TAU=6.283185307179586,TOWER_RANGE=170,MAX_TOWERS=2;
 let W,H,cx,cy,R,SR,S,last=0,fc=0,theme={};
 const lDps=l=>24+9*(l-1),mDmg=l=>1.3+.55*(l-1),hpMax=()=>100+25*S.hpLv;
 const topLv=()=>1+Math.floor((S.wave-1)/10);
@@ -121,7 +122,7 @@ function resize(){
  W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
  ctx.setTransform(d,0,0,d,0,0);
  cx=W/2;cy=H/2+15;
- R=Math.max(260,Math.min(540,Math.min(W,H)*.72));
+ R=Math.max(210,Math.min(440,Math.min(W,H)*.60));
  SR=Math.hypot(W,H)/2+60;
  readTheme();
 }
@@ -141,8 +142,8 @@ $('pnClose').onclick = () => {
 
 function init(){
  S={wave:0,hp:100,hpLv:0,tok:0,acc:0,laser:1,mini:0,bolt:0,bcd:0,
-    lightnings:[],sparks:[],shells:[],miniSmoke:[],miniSparks:[],en:[],
-    spawn:0,st:0,iv:1,inter:0,mcd:0,tr:[],mFlashes:[],mImpacts:[],
+    lightnings:[],sparks:[],shells:[],miniSmoke:[],miniSparks:[],ricochets:[],en:[],
+    spawn:0,st:0,iv:1,inter:0,mcd:0,miniBurst:0,tr:[],mFlashes:[],mImpacts:[],
     ban:0,bt:'',over:false,tgt:null,hit:0,speed:1,devAuth:false,infTok:false,
     shake:0,flash:0,recoil:0,laserAngle:0,miniAngle:0,barrelSpin:0,heat:0,
     towers:[],extraLaserLv:1,extraMiniLv:1,extraType:'laser',
@@ -177,20 +178,22 @@ function update(dt){
  S.flash = Math.max(0, S.flash - dt * 3);
  S.recoil = Math.max(0, S.recoil - dt * 30);
 
+ const curMR = S.mini ? MR + 6 : MR;
+
  if(S.spawn>0){S.st-=dt;while(S.st<=0&&S.spawn>0){spawn();S.spawn--;S.st+=S.iv}}
  const inr=[];let near=null,nd=1e9;
  for(const e of S.en){const dx=cx-e.x,dy=cy-e.y,d=Math.hypot(dx,dy);e.fl=Math.max(0,e.fl-dt);
-  if(d>MR+e.r){e.x+=dx/d*e.v*dt;e.y+=dy/d*e.v*dt}else{e.cd-=dt;if(e.cd<=0){e.cd=1;S.hp-=e.d;S.hit=.15}}
+  if(d>curMR+e.r){e.x+=dx/d*e.v*dt;e.y+=dy/d*e.v*dt}else{e.cd-=dt;if(e.cd<=0){e.cd=1;S.hp-=e.d;S.hit=.15}}
   if(d-e.r<=R){inr.push(e);if(d<nd){nd=d;near=e}}}
  S.tgt=near;
  if(near){
-  const lx = S.mini ? cx - 7 : cx;
+  const lx = S.mini ? cx - 11 : cx;
   S.laserAngle = Math.atan2(near.y - cy, near.x - lx);
   hit(near,lDps(S.laser)*dt*(near.ar?.75:1));
  }
 
  if(S.mini){
-  const mcx = cx + 7, mcy = cy;
+  const mcx = cx + 11, mcy = cy;
   const arm = inr.filter(e=>e.ar&&e.h>0);
   const pool = arm.length ? arm : inr.filter(e=>e.h>0);
   if(pool.length){
@@ -198,7 +201,11 @@ function update(dt){
    S.miniAngle = Math.atan2(target.y - mcy, target.x - mcx);
   }
 
-  if(inr.length){
+  S.miniBurst = (S.miniBurst || 0) + dt;
+  const burstCycle = S.miniBurst % 0.52;
+  const isFiring = burstCycle < 0.38;
+
+  if(inr.length && isFiring){
    S.mcd-=dt;
    let n=0;
    while(S.mcd<=0&&n++<8){
@@ -213,15 +220,15 @@ function update(dt){
     S.barrelSpin = (S.barrelSpin || 0) + 1.25;
     S.heat = Math.min(1, S.heat + 0.035);
 
-    const barrelTipX = mcx + Math.cos(angle) * 22;
-    const barrelTipY = mcy + Math.sin(angle) * 22;
+    const barrelTipX = mcx + Math.cos(angle) * 31;
+    const barrelTipY = mcy + Math.sin(angle) * 31;
 
     S.mFlashes.push({x: barrelTipX, y: barrelTipY, angle, t: 0.05, maxT: 0.05});
 
     const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
     const brassSpd = 80 + Math.random() * 110;
     S.shells.push({
-     x: mcx + Math.cos(angle)*10, y: mcy + Math.sin(angle)*10,
+     x: mcx + Math.cos(angle)*12, y: mcy + Math.sin(angle)*12,
      vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
      rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
      t: 0.4 + Math.random()*0.2, maxT: 0.6
@@ -232,7 +239,7 @@ function update(dt){
       x: barrelTipX, y: barrelTipY,
       vx: Math.cos(angle)*25 + (Math.random()-0.5)*20,
       vy: Math.sin(angle)*25 + (Math.random()-0.5)*20,
-      r: 3 + Math.random()*3,
+      r: 3.5 + Math.random()*3.5,
       t: 0.35, maxT: 0.35
      });
     }
@@ -242,19 +249,43 @@ function update(dt){
     const ty = e.y + Math.sin(angle + Math.PI/2) * spread;
     S.tr.push({x1: barrelTipX, y1: barrelTipY, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
 
-    for(let k=0; k<3; k++) {
-     const spd = 60 + Math.random()*140;
-     const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
-     S.miniSparks.push({
-      x: tx, y: ty,
-      vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
-      t: 0.15 + Math.random()*0.1, maxT: 0.25
+    if(e.ar){
+     const normAng = Math.atan2(ty - e.y, tx - e.x);
+     for(let k=0; k<4; k++) {
+      const rAng = normAng + (Math.random()-0.5)*1.4;
+      const rSpd = 140 + Math.random()*200;
+      S.miniSparks.push({
+       x: tx, y: ty,
+       vx: Math.cos(rAng)*rSpd, vy: Math.sin(rAng)*rSpd,
+       t: 0.18 + Math.random()*0.12, maxT: 0.3,
+       isRicochet: true
+      });
+     }
+     const ricAng = normAng + (Math.random()-0.5)*1.2;
+     const ricLen = 16 + Math.random()*18;
+     S.ricochets.push({
+      x1: tx, y1: ty,
+      x2: tx + Math.cos(ricAng)*ricLen,
+      y2: ty + Math.sin(ricAng)*ricLen,
+      t: 0.12, maxT: 0.12
      });
+    } else {
+     for(let k=0; k<3; k++) {
+      const spd = 60 + Math.random()*140;
+      const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
+      S.miniSparks.push({
+       x: tx, y: ty,
+       vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
+       t: 0.15 + Math.random()*0.1, maxT: 0.25
+      });
+     }
     }
 
     S.mImpacts.push({x: tx, y: ty, t: 0.12});
-    S.mcd+=1/16;
+    S.mcd += 1/22;
    }
+  } else if (!isFiring) {
+   S.mcd = 0;
   }
   S.heat = Math.max(0, S.heat - dt * 0.35);
  } else {
@@ -279,57 +310,86 @@ function update(dt){
    if(tw.type === 'laser') {
     hit(best, lDps(tw.level) * dt * (best.ar ? 0.75 : 1));
    } else if(tw.type === 'minigun') {
-    tw.mcd = (tw.mcd || 0) - dt;
-    let n = 0;
-    while(tw.mcd <= 0 && n++ < 8) {
-     if(best.h <= 0) break;
-     hit(best, mDmg(tw.level) * (best.ar ? 1.5 : 1));
-     tw.recoil = 4;
-     tw.heat = Math.min(1, (tw.heat || 0) + 0.04);
-     
-     const mx = tw.x + Math.cos(angle) * 18;
-     const my = tw.y + Math.sin(angle) * 18;
+    tw.burstTimer = (tw.burstTimer || 0) + dt;
+    const twCycle = tw.burstTimer % 0.52;
+    const twFiring = twCycle < 0.38;
 
-     S.mFlashes.push({x: mx, y: my, angle, t: 0.05, maxT: 0.05});
+    if(twFiring) {
+     tw.mcd = (tw.mcd || 0) - dt;
+     let n = 0;
+     while(tw.mcd <= 0 && n++ < 8) {
+      if(best.h <= 0) break;
+      hit(best, mDmg(tw.level) * (best.ar ? 1.5 : 1));
+      tw.recoil = 4;
+      tw.heat = Math.min(1, (tw.heat || 0) + 0.04);
+      
+      const mx = tw.x + Math.cos(angle) * 22;
+      const my = tw.y + Math.sin(angle) * 22;
 
-     const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
-     const brassSpd = 60 + Math.random() * 90;
-     S.shells.push({
-      x: tw.x, y: tw.y,
-      vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
-      rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
-      t: 0.35 + Math.random()*0.2, maxT: 0.55
-     });
+      S.mFlashes.push({x: mx, y: my, angle, t: 0.05, maxT: 0.05});
 
-     if(Math.random() < 0.4) {
-      S.miniSmoke.push({
-       x: mx, y: my,
-       vx: Math.cos(angle)*20 + (Math.random()-0.5)*15,
-       vy: Math.sin(angle)*20 + (Math.random()-0.5)*15,
-       r: 2.5 + Math.random()*2.5,
-       t: 0.3, maxT: 0.3
+      const brassAng = angle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI/2 + (Math.random()-0.5)*0.5);
+      const brassSpd = 60 + Math.random() * 90;
+      S.shells.push({
+       x: tw.x, y: tw.y,
+       vx: Math.cos(brassAng)*brassSpd, vy: Math.sin(brassAng)*brassSpd,
+       rot: Math.random()*TAU, vRot: (Math.random()-0.5)*25,
+       t: 0.35 + Math.random()*0.2, maxT: 0.55
       });
+
+      if(Math.random() < 0.4) {
+       S.miniSmoke.push({
+        x: mx, y: my,
+        vx: Math.cos(angle)*20 + (Math.random()-0.5)*15,
+        vy: Math.sin(angle)*20 + (Math.random()-0.5)*15,
+        r: 2.5 + Math.random()*2.5,
+        t: 0.3, maxT: 0.3
+       });
+      }
+
+      const spread = (Math.random() - 0.5) * 14;
+      const tx = best.x + Math.cos(angle + Math.PI/2) * spread;
+      const ty = best.y + Math.sin(angle + Math.PI/2) * spread;
+      S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
+
+      if(best.ar){
+       const normAng = Math.atan2(ty - best.y, tx - best.x);
+       for(let k=0; k<3; k++) {
+        const rAng = normAng + (Math.random()-0.5)*1.4;
+        const rSpd = 130 + Math.random()*180;
+        S.miniSparks.push({
+         x: tx, y: ty,
+         vx: Math.cos(rAng)*rSpd, vy: Math.sin(rAng)*rSpd,
+         t: 0.15 + Math.random()*0.1, maxT: 0.25,
+         isRicochet: true
+        });
+       }
+       const ricAng = normAng + (Math.random()-0.5)*1.2;
+       const ricLen = 14 + Math.random()*16;
+       S.ricochets.push({
+        x1: tx, y1: ty,
+        x2: tx + Math.cos(ricAng)*ricLen,
+        y2: ty + Math.sin(ricAng)*ricLen,
+        t: 0.12, maxT: 0.12
+       });
+      } else {
+       for(let k=0; k<2; k++) {
+        const spd = 50 + Math.random()*120;
+        const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
+        S.miniSparks.push({
+         x: tx, y: ty,
+         vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
+         t: 0.12 + Math.random()*0.1, maxT: 0.22
+        });
+       }
+      }
+
+      S.mImpacts.push({x: tx, y: ty, t: 0.12});
+      tw.mcd += 1/22;
      }
-
-     const spread = (Math.random() - 0.5) * 14;
-     const tx = best.x + Math.cos(angle + Math.PI/2) * spread;
-     const ty = best.y + Math.sin(angle + Math.PI/2) * spread;
-     S.tr.push({x1: mx, y1: my, x2: tx, y2: ty, t: 0.14, maxT: 0.14});
-
-     for(let k=0; k<2; k++) {
-      const spd = 50 + Math.random()*120;
-      const sAng = angle + Math.PI + (Math.random()-0.5)*1.2;
-      S.miniSparks.push({
-       x: tx, y: ty,
-       vx: Math.cos(sAng)*spd, vy: Math.sin(sAng)*spd,
-       t: 0.12 + Math.random()*0.1, maxT: 0.22
-      });
-     }
-
-     S.mImpacts.push({x: tx, y: ty, t: 0.12});
-     tw.mcd += 1/16;
+    } else {
+     tw.mcd = 0;
     }
-    if(tw.mcd < 0) tw.mcd = 0;
    }
   } else {
    tw.mcd = 0;
@@ -406,6 +466,9 @@ function update(dt){
  }
  S.miniSparks=S.miniSparks.filter(ms=>ms.t>0);
 
+ for(const r of S.ricochets) r.t -= dt;
+ S.ricochets = S.ricochets.filter(r => r.t > 0);
+
  S.en=S.en.filter(e=>e.h>0);
  for(const t of S.tr)t.t-=dt;S.tr=S.tr.filter(t=>t.t>0);
  for(const f of S.mFlashes)f.t-=dt;S.mFlashes=S.mFlashes.filter(f=>f.t>0);
@@ -414,8 +477,6 @@ function update(dt){
  if(S.hp<=0){S.hp=0;S.over=true;$('gt').textContent='You held out until wave '+S.wave+'.';$('go').hidden=false;return}
  if(!S.spawn&&!S.en.length){S.inter+=dt;if(S.inter>2.5)nextWave()}
 }
-
-function line(x,y){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke()}
 
 function draw(){
  ctx.save();
@@ -456,7 +517,7 @@ function draw(){
   ctx.setLineDash([]);
 
   ctx.beginPath();
-  ctx.arc(S.mousePos.x, S.mousePos.y, 12, 0, TAU);
+  ctx.arc(S.mousePos.x, S.mousePos.y, 14, 0, TAU);
   ctx.fillStyle = 'rgba(37,99,235,0.7)';
   ctx.fill();
  }
@@ -467,7 +528,7 @@ function draw(){
   ctx.translate(sh.x, sh.y);
   ctx.rotate(sh.rot);
   ctx.fillStyle = `rgba(245, 158, 11, ${a})`;
-  ctx.fillRect(-1.5, -3, 3, 6);
+  ctx.fillRect(-1.8, -4, 3.6, 8);
   ctx.restore();
  }
 
@@ -496,6 +557,14 @@ function draw(){
   ctx.stroke();
  }
 
+ for(const r of S.ricochets) {
+  const a = r.t / r.maxT;
+  ctx.beginPath(); ctx.moveTo(r.x1, r.y1); ctx.lineTo(r.x2, r.y2);
+  ctx.strokeStyle = `rgba(253, 224, 71, ${a * 0.8})`; ctx.lineWidth = 3.5; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r.x1, r.y1); ctx.lineTo(r.x2, r.y2);
+  ctx.strokeStyle = `rgba(255, 255, 255, ${a})`; ctx.lineWidth = 1.5; ctx.stroke();
+ }
+
  for(const i of S.mImpacts) {
   const a=Math.max(0,i.t/0.12),r=(1-a)*12+4;
   ctx.beginPath();ctx.arc(i.x,i.y,r,0,TAU);
@@ -506,23 +575,23 @@ function draw(){
  for(const ms of S.miniSparks) {
   const a = ms.t / ms.maxT;
   ctx.beginPath();
-  ctx.arc(ms.x, ms.y, 1.5, 0, TAU);
-  ctx.fillStyle = `rgba(253, 224, 71, ${a})`;
+  ctx.arc(ms.x, ms.y, ms.isRicochet ? 2.2 : 1.5, 0, TAU);
+  ctx.fillStyle = ms.isRicochet ? `rgba(255, 255, 220, ${a})` : `rgba(253, 224, 71, ${a})`;
   ctx.fill();
  }
 
  if(S.tgt){
-  const lx = S.mini ? cx - 7 : cx;
+  const lx = S.mini ? cx - 11 : cx;
   const ly = cy;
-  const lTipX = lx + Math.cos(S.laserAngle) * 18;
-  const lTipY = ly + Math.sin(S.laserAngle) * 18;
+  const lTipX = lx + Math.cos(S.laserAngle) * 24;
+  const lTipY = ly + Math.sin(S.laserAngle) * 24;
 
   const flicker=Math.sin(performance.now()*0.05)*2+3;
   ctx.strokeStyle='rgba(239,68,68,.3)';ctx.lineWidth=flicker+6;
   ctx.beginPath(); ctx.moveTo(lTipX, lTipY); ctx.lineTo(S.tgt.x, S.tgt.y); ctx.stroke();
-  ctx.strokeStyle='#ef4444';ctx.lineWidth=3;
+  ctx.strokeStyle='#ef4444';ctx.lineWidth=3.5;
   ctx.beginPath(); ctx.moveTo(lTipX, lTipY); ctx.lineTo(S.tgt.x, S.tgt.y); ctx.stroke();
-  ctx.strokeStyle='#fef08a';ctx.lineWidth=1;
+  ctx.strokeStyle='#fef08a';ctx.lineWidth=1.5;
   ctx.beginPath(); ctx.moveTo(lTipX, lTipY); ctx.lineTo(S.tgt.x, S.tgt.y); ctx.stroke();
 
   for(let i=0; i<3; i++) {
@@ -537,11 +606,11 @@ function draw(){
   ctx.translate(tw.x, tw.y);
 
   if(tw === S.selectedTower) {
-   ctx.beginPath(); ctx.arc(0, 0, 16, 0, TAU);
+   ctx.beginPath(); ctx.arc(0, 0, 18, 0, TAU);
    ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke();
   }
 
-  ctx.beginPath(); ctx.arc(0, 0, 12, 0, TAU);
+  ctx.beginPath(); ctx.arc(0, 0, 14, 0, TAU);
   ctx.fillStyle = theme.panel; ctx.fill();
   ctx.strokeStyle = theme.acc; ctx.lineWidth = 3; ctx.stroke();
 
@@ -551,8 +620,8 @@ function draw(){
 
   if(tw.type === 'laser') {
    ctx.fillStyle = '#ef4444';
-   ctx.fillRect(0, -2.5, 9, 5);
-   ctx.beginPath(); ctx.arc(0, 0, 5, 0, TAU);
+   ctx.fillRect(0, -3, 12, 6);
+   ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU);
    ctx.fillStyle = '#ef4444'; ctx.fill();
   } else {
    const th = tw.heat || 0;
@@ -566,30 +635,30 @@ function draw(){
     ctx.shadowColor = `rgba(249, 115, 22, ${th})`;
     ctx.shadowBlur = 8 * th;
     ctx.fillStyle = tHeatCol;
-    ctx.fillRect(0, -5, 16, 3);
-    ctx.fillRect(0, 2, 16, 3);
+    ctx.fillRect(0, -6, 18, 3.5);
+    ctx.fillRect(0, 2.5, 18, 3.5);
     ctx.restore();
    }
 
    ctx.fillStyle = '#1e293b';
-   ctx.fillRect(0, -5, 16, 3);
-   ctx.fillRect(0, 2, 16, 3);
+   ctx.fillRect(0, -6, 18, 3.5);
+   ctx.fillRect(0, 2.5, 18, 3.5);
 
    ctx.fillStyle = tHeatCol;
-   ctx.fillRect(1, -4, 14, 1);
-   ctx.fillRect(1, 3, 14, 1);
+   ctx.fillRect(1, -5, 16, 1.5);
+   ctx.fillRect(1, 3.5, 16, 1.5);
 
    ctx.fillStyle = th > 0.4 ? tHeatCol : '#f59e0b';
-   ctx.fillRect(16, -6, 3, 12);
+   ctx.fillRect(18, -7, 3.5, 14);
 
-   ctx.beginPath(); ctx.arc(0, 0, 6, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
-   ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
+   ctx.beginPath(); ctx.arc(0, 0, 7, 0, TAU); ctx.fillStyle = '#f59e0b'; ctx.fill();
+   ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, TAU); ctx.fillStyle = '#78350f'; ctx.fill();
   }
   ctx.restore();
 
   ctx.fillStyle = theme.ink; ctx.font = 'bold 9px system-ui,sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('L' + tw.level, 0, 20);
+  ctx.fillText('L' + tw.level, 0, 22);
 
   ctx.restore();
  }
@@ -669,7 +738,7 @@ function draw(){
   ctx.beginPath();
   for(let k=0; k<8; k++) {
    const ang = (k * Math.PI / 4);
-   const len = (k % 2 === 0 ? 22 : 9) * a;
+   const len = (k % 2 === 0 ? 26 : 11) * a;
    const px = Math.cos(ang) * len;
    const py = Math.sin(ang) * len;
    if(k === 0) ctx.moveTo(px, py);
@@ -680,52 +749,52 @@ function draw(){
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(0, 0, 7 * a, 0, TAU);
+  ctx.arc(0, 0, 9 * a, 0, TAU);
   ctx.fillStyle = `rgba(254, 240, 138, ${a})`;
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(0, 0, 3.5 * a, 0, TAU);
+  ctx.arc(0, 0, 4.5 * a, 0, TAU);
   ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
   ctx.fill();
 
   ctx.restore();
  }
 
- // --- MAIN TOWER BASE & TURRETS ---
+ // --- MAIN TOWER BASE & TURRETS (SCALED UP) ---
  ctx.save();
  ctx.translate(cx, cy);
 
- const curMR = S.mini ? MR + 4 : MR;
+ const curMR = S.mini ? MR + 6 : MR;
  ctx.beginPath(); ctx.arc(0, 0, curMR, 0, TAU);
  ctx.fillStyle = S.hit > 0 ? '#ef4444' : theme.core; ctx.fill();
- ctx.lineWidth = 3; ctx.strokeStyle = theme.bg; ctx.stroke();
+ ctx.lineWidth = 4; ctx.strokeStyle = theme.bg; ctx.stroke();
  ctx.restore();
 
- // 1. LASER TURRET MODEL
- const lx = S.mini ? cx - 7 : cx;
+ // 1. LARGER LASER TURRET MODEL
+ const lx = S.mini ? cx - 11 : cx;
  const ly = cy;
  ctx.save();
  ctx.translate(lx, ly);
  ctx.rotate(S.laserAngle);
 
- ctx.beginPath(); ctx.arc(0, 0, 7, 0, TAU);
+ ctx.beginPath(); ctx.arc(0, 0, 10, 0, TAU);
  ctx.fillStyle = '#1e293b'; ctx.fill();
- ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 1.5; ctx.stroke();
+ ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.stroke();
 
  ctx.fillStyle = '#0f172a';
- ctx.fillRect(2, -4, 12, 8);
+ ctx.fillRect(3, -6, 16, 12);
  ctx.fillStyle = '#ef4444';
- ctx.fillRect(10, -2, 6, 4);
- ctx.fillRect(2, -1.5, 9, 3);
+ ctx.fillRect(14, -3, 8, 6);
+ ctx.fillRect(3, -2, 12, 4);
 
- ctx.beginPath(); ctx.arc(4, 0, 3, 0, TAU);
+ ctx.beginPath(); ctx.arc(6, 0, 4.5, 0, TAU);
  ctx.fillStyle = '#fca5a5'; ctx.fill();
  ctx.restore();
 
- // 2. MINIGUN TURRET MODEL (If Purchased)
+ // 2. LARGER MINIGUN TURRET MODEL (If Purchased)
  if(S.mini) {
-  const mx = cx + 7;
+  const mx = cx + 11;
   const my = cy;
   ctx.save();
   ctx.translate(mx, my);
@@ -733,9 +802,9 @@ function draw(){
   if(S.miniAngle !== undefined) ctx.rotate(S.miniAngle);
   if(S.recoil > 0) ctx.translate(-S.recoil, 0);
 
-  ctx.beginPath(); ctx.arc(0, 0, 7, 0, TAU);
+  ctx.beginPath(); ctx.arc(0, 0, 10, 0, TAU);
   ctx.fillStyle = '#0f172a'; ctx.fill();
-  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
 
   const spin = S.barrelSpin || 0;
   const h = S.heat || 0;
@@ -755,24 +824,24 @@ function draw(){
   const heatColor = `rgb(${r},${g},${b})`;
 
   ctx.fillStyle = '#b45309';
-  for(let i = -5; i <= 1; i += 3) {
-   ctx.fillRect(-2 + i, 5, 2, 4);
+  for(let i = -7; i <= 2; i += 4) {
+   ctx.fillRect(-3 + i, 7, 3, 5);
   }
 
   ctx.fillStyle = '#0f172a';
-  ctx.fillRect(-2, -7, 12, 14);
+  ctx.fillRect(-3, -10, 17, 20);
 
   if(h > 0.05) {
    ctx.save();
-   ctx.shadowColor = heatColor; ctx.shadowBlur = 8 * h;
+   ctx.shadowColor = heatColor; ctx.shadowBlur = 10 * h;
    ctx.fillStyle = heatColor;
-   ctx.fillRect(1, -5, 6, 1.5);
-   ctx.fillRect(1, 3, 6, 1.5);
+   ctx.fillRect(1, -7, 9, 2);
+   ctx.fillRect(1, 5, 9, 2);
    ctx.restore();
   }
 
   const numBarrels = 6;
-  const barrelRadius = 4.5;
+  const barrelRadius = 6.5;
   let barrelList = [];
   for(let i = 0; i < numBarrels; i++) {
    const bAngle = spin + (i * TAU / numBarrels);
@@ -784,12 +853,12 @@ function draw(){
    const pScale = 0.75 + (bar.z + 1) * 0.25;
    const shade = Math.floor(25 + (bar.z + 1) * 35);
    ctx.fillStyle = `rgb(${shade},${shade+10},${shade+25})`;
-   ctx.fillRect(6, bar.y - (1.2 * pScale), 18, 2.4 * pScale);
+   ctx.fillRect(8, bar.y - (1.6 * pScale), 24, 3.2 * pScale);
   }
 
   ctx.fillStyle = h > 0.4 ? heatColor : '#64748b';
-  ctx.fillRect(15, -5, 2.5, 10);
-  ctx.fillRect(22, -5, 2.5, 10);
+  ctx.fillRect(20, -7, 3.5, 14);
+  ctx.fillRect(29, -7, 3.5, 14);
 
   ctx.restore();
  }
@@ -928,7 +997,7 @@ cv.onclick = e => {
   return;
  }
 
- const clicked = S.towers.find(tw => Math.hypot(tw.x - x, tw.y - y) <= 18);
+ const clicked = S.towers.find(tw => Math.hypot(tw.x - x, tw.y - y) <= 20);
  if(clicked) {
   S.selectedTower = clicked;
   openTowerPanel();
