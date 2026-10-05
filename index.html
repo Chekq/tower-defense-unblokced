@@ -106,7 +106,7 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.8.0';
+const GAME_VERSION = 'v1.9.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
@@ -121,7 +121,7 @@ function resize(){
  W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
  ctx.setTransform(d,0,0,d,0,0);
  cx=W/2;cy=H/2+15;
- R=Math.max(130,Math.min(450,Math.min(W,H)*.45));
+ R=Math.max(260,Math.min(540,Math.min(W,H)*.72));
  SR=Math.hypot(W,H)/2+60;
  readTheme();
 }
