@@ -56,8 +56,8 @@ h2{margin:0 0 6px;font-size:18px}
  <div class="mute" style="margin-bottom:12px;">Game paused. Here is what changed in this update:</div>
  <div id="pnList" style="margin-bottom:16px;">
   <ul style="padding-left:18px;margin:0;line-height:1.6;">
-   <li><b>Lightning Strike Buff:</b> Reduced strike delay to 0.5 seconds and increased damage to 100% instant kill.</li>
-<li><b>Store Update:</b> Updated the Lightning Bolt description in the upgrade store to reflect the new stats.</li>
+  <li><b>Map Update:</b> Expanded the main arena size.</li>
+  <li><b>Balance Changes:</b> Adjusted tower placement radiuses.</li>
   </ul>
  </div>
  <button id="pnClose" style="width:100%;">Got it!</button>
@@ -106,7 +106,7 @@ h2{margin:0 0 6px;font-size:18px}
 <div class="ov" id="go" hidden><div class="card"><h2>Base overrun</h2><p id="gt"></p><button id="rs">Play again</button></div></div>
 </div>
 <script>
-const GAME_VERSION = 'v1.7.0';
+const GAME_VERSION = 'v1.8.0';
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const COL=['#22c55e','#38bdf8','#a78bfa','#f472b6','#fb923c','#ef4444','#facc15','#2dd4bf','#e5e7eb','#c084fc'];
 const col=L=>COL[L-1]||`hsl(${(L*47)%360} 85% 60%)`;
@@ -121,7 +121,7 @@ function resize(){
  W=a.clientWidth;H=a.clientHeight;cv.width=W*d;cv.height=H*d;
  ctx.setTransform(d,0,0,d,0,0);
  cx=W/2;cy=H/2+15;
- R=Math.max(130,Math.min(270,Math.min(W,H)*.36));
+ R=Math.max(130,Math.min(450,Math.min(W,H)*.45));
  SR=Math.hypot(W,H)/2+60;
  readTheme();
 }
