@@ -2,33 +2,29 @@
 
 click link in top/middle right to open or download raw file code from index.html and open to run if link not working usually link will not work for a minute if new update is pushed so do download way 
 
-Objective
-Protect the central core from incoming enemy circles. If enemies reach the center, they attack your base. The game ends when your HP hits zero.
+Last Stand — Game Guide & InstructionsObjectiveProtect your central base against endless waves of invading enemies. Survive as many waves as possible by defeating targets, earning tokens, and strategically upgrading your arsenal.   
 
-Key Game Mechanics
-Automatic Targeting: Combat happens automatically inside the dotted circular range indicator. You do not need to manually aim or click to attack.
+Core Controls & GameplayEarning Tokens: Dealing damage fills your token progress bar at the top of the screen. Each time the bar fills, you gain 1 Token.  
 
-Laser (Default Weapon): Continuously damages the single closest enemy inside your range.
+Placing Extra Towers: Buy an Extra Tower from the Upgrades menu, then click anywhere inside the expanded arena to place it. You can deploy up to 2 extra towers on the map.   
 
-Tokens: You earn tokens by dealing damage to enemies. Track your progress using the orange "Tokens" bar at the top of the screen.
+Managing Towers: Click on any placed tower on the field to open the Extra Towers Upgrades menu, where you can upgrade fire damage or convert all extra towers into Miniguns.  
 
-Upgrades & Strategy
-Click the Upgrades button at the top right to pause the game and spend earned tokens:
+Game Speed: Click the 2x Speed button on the HUD to toggle between normal and double speed.  
 
-Laser (1 Token): Increases the damage dealt per second to the single nearest enemy.
+Weapons & UpgradesWeapon 
 
-Minigun (3 Tokens to buy, 1 Token to upgrade): Unlocks a secondary fast-firing turret that shoots random targets in your range.
+beam auto-targeting the closest enemy in range. Deals 0.75× damage to armored targets.   
 
-Health (2 Tokens): Increases your max base HP by +25 and instantly heals your base for 25 HP.
+MinigunBase / Extra TowerExtremely rapid-fire kinetic weapon. Deals 1.5× bonus damage to armored enemies. 
 
-Enemy Types & Defense Tips
-Enemy Levels: Enemies display a level number inside their circle. Higher-level enemies have more health and move faster.
+Lightning BoltGlobal UltimateAutomatically strikes the single highest-HP enemy on the map every 0.8 seconds for 100% instant-kill damage.   
 
-Armored Enemies (Level 6+): Designated by a grey ring around their circle.
+Health UpgradeBase DefenseIncreases total max HP by +25 and instantly adds +25 HP to your base.  
 
-Minigun deals 1.5× extra damage to armored enemies.
+Enemy Types & Wave MechanicsWave Progression: Every wave spawns more enemies. Every 10 waves, a new enemy level unlocks.  
 
-Laser deals 25% less damage to armored enemies.
+Standard Enemies (Lv 1–5): Move toward the base and deal contact damage upon reaching the core.   
 
-Tip: Unlock the Minigun before Wave 6 so you are prepared for armored enemies, and use Health upgrades whenever your base takes critical damage to heal up mid-run.
+Armored Enemies (Lv 6+): Indicated by a grey ring. They have high health and take reduced damage from Lasers, but suffer bonus damage from Miniguns. 
 
